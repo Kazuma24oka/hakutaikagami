@@ -93,6 +93,7 @@ public partial class ProtoDebug : Node
             {
                 case "/state": reply.SetResult(Write(Known())); return;
                 case "/all": reply.SetResult(Write(All())); return;
+                case "/dots": reply.SetResult(Write(game.GetChildren().OfType<DotOfficerActor>().Where(d => d.Visible).Select(d => new { key = d.Key, x = Math.Round(d.Position.X), z = Math.Round(d.Position.Z) }).ToArray())); return; // 見えているちびコマと足軽（どこに何が描かれているか）
                 case "/walk": game.WalkTo(float.Parse(F("x")), float.Parse(F("y"))); break;
                 case "/click": game.ClickGround(new Vector2(float.Parse(F("x")), float.Parse(F("y")))); break;
                 case "/do": game.Message = w.Do(F("id")); game.RefreshUi(); break;

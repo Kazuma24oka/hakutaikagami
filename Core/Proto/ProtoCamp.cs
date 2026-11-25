@@ -71,7 +71,8 @@ public sealed partial class ProtoWorld
         Happen("camp-packed", "本陣を畳み終えた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
     }
     // 本陣のまわりの、隊ごとに少しずらした所（集まるとき・退くとき）。
-    (long X, long Y) AroundCamp((long X, long Y) c, string id) { int h = Hash(id, 7); return ProtoMove.Nearest(Map, c.X + (h % 5 - 2) * 25_00, c.Y + (h / 5 % 5 - 2) * 25_00); }
+    // 本陣のまわり：真ん中（本陣の札）と、兵のない本人が控える入口の脇を避けて、140m の輪の上の7か所に分ける（札が重ならないように。2026-11-25 擬人格の印）。
+    (long X, long Y) AroundCamp((long X, long Y) c, string id) { int k = Hash(id, 7) % 7; double a = Math.PI * 2 * (k + 1) / 8 + Math.PI * 0.6; return ProtoMove.Nearest(Map, c.X + (long)(Math.Cos(a) * 140_00), c.Y + (long)(Math.Sin(a) * 140_00)); }
     // 指示の届く時刻：本陣（取られたら総大将）から使番が走る。
     internal long RunnerAt(ProtoPerson u)
     {
@@ -80,12 +81,37 @@ public sealed partial class ProtoWorld
         return Second + Dist(u, from.X, from.Y) / RunnerSpeed;
     }
 
+    // ---- 総大将への頼み（物理配送。2026-11-25 擬人格の印「総大将は遠くで戦っているのに、その場で返事が来る」） ----
+    // 本陣移動・攻城軍議の頼みは、総大将が本人から300m以内なら面と向かって話す。遠ければ使番が運び、返事も使番が持ち帰る（行き帰りの道のり）。
+    bool answering; // 届いた頼みに総大将が答えている間
+    ProtoPerson AskLead(string kind) => kind == "camp" ? (Person(Heir).Active ? Person(Heir) : Person(Karou)) : SiegeLead;
+    public bool LeadNear(string kind = "siege") => answering || Dist(Player, AskLead(kind)) <= 300_00;
+    public bool Asking(string kind) => War.Asks.Any(a => a[0] == kind);
+    string? SendAsk(string kind, string id)
+    {
+        if (LeadNear(kind)) return null;
+        var lead = AskLead(kind);
+        if (Asking(kind)) return "使番はまだ戻らない。";
+        War.Asks.Add([kind, id, (Second + 2 * Dist(Player, lead) / RunnerSpeed).ToString()]);
+        return $"使番を{lead.Name}のもとへ走らせた。";
+    }
+    void AnswerAsks()
+    {
+        foreach (var a in War.Asks.Where(a => Second >= long.Parse(a[2])).ToArray())
+        {
+            War.Asks.Remove(a); answering = true; string r;
+            try { r = a[0] == "camp" ? DoCamp(a[1]) : DoSiege(a[1]); } finally { answering = false; }
+            Note(r == "" ? "使番が戻った。返事は無い。" : "使番が戻った。" + r);
+        }
+    }
+    string DoCamp(string id) { if (!id.StartsWith("move:")) return ""; var xy = id[5..].Split(','); return MoveCamp(long.Parse(xy[0]), long.Parse(xy[1])); }
+
     // ---- 本陣を移す ----
     public bool CampMoving => War.CampMoveTo != null;
     public (long X, long Y)? CampMoveTarget => War.CampMoveTo is { } t ? (t[0], t[1]) : null;
     public long CampMoveLeft => Math.Max(0, War.CampMoveUntil - Second);
     public bool CanMoveCamp => War.Phase is "行軍" or "合戦" && War.Result == "" && InArmy(Player) && !CampLost("takano") && !CampMoving && !Talking
-        && CampAt("takano") is { } c && Dist(Player, c.X, c.Y) <= 300_00;
+        && (answering || CampAt("takano") is { } c && Dist(Player, c.X, c.Y) <= 300_00);
     string MoveCamp(long x, long y)
     {
         if (!CanMoveCamp) return "";
@@ -107,6 +133,7 @@ public sealed partial class ProtoWorld
     // 毎分（行軍と合戦の間）：本陣を置く・進める、兵糧の届かない隊が痩せる、本陣を取られる、劣勢の岩切勢が本陣を突く。
     void Camps(ProtoPerson[] takano, ProtoPerson[] rebels)
     {
+        AnswerAsks();
         var heir = Person(Heir);
         // 総勢が本陣の地に着いたら、本陣を置く。
         if (!Flag("camp-set") && War.Camp.TryGetValue("takano", out var plan) && War.Split)
@@ -125,7 +152,7 @@ public sealed partial class ProtoWorld
         UpdatePacking();
         // 兵を失って戦えない本人は、委任なら本陣で控える。
         { var me = Player; if (InArmy(me) && Auto(me) && War.Result == "" && (me.Soldiers == 0 || War.Routed.Contains(me.Id) && (me.Soldiers < 10 || War.Recovered.Contains(me.Id))))
-          { var c = CampOf(me); if (CampMoveTarget is { } mt) c = (mt.X, mt.Y, c.Name); var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
+          { var c = CampOf(me); /* 本陣を移している間は、移し終えるまで元の本陣で控える（先に一人で着かない） */ var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
 
         // 兵糧の届かない隊は、じわじわ士気と兵が減る（10分ごと）。城内の隊は、城の兵糧の決まり（Core/Proto/ProtoSiege.cs）。
         foreach (var u in takano.Concat(rebels).Where(u => u.Soldiers > 0 && !Sheltered(u)))

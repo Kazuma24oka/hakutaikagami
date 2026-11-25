@@ -81,6 +81,7 @@ public sealed class ProtoWarState
     public Dictionary<string, long> OutSince { get; set; } = [];
     public long[]? CampMoveTo { get; set; }   // 本陣を移している先（移していなければ null）
     public long CampMoveUntil { get; set; }
+    public List<string[]> Asks { get; set; } = []; // 使番が運んでいる本人の頼み：[種類, 中身, 返事が戻る時刻]（Core/Proto/ProtoCamp.cs）
     public Dictionary<string, int> StartMen { get; set; } = []; // 合戦に入ったときの兵の数（右下の窓に「今/元」で出す）
 }
 public sealed record ProtoCouncilView(string Commander, string[] Opinions, (string Id, string Name)[] Positions, string[] Departures, string[] Signals, string[] Plans, string[] Goals, string[] RetreatAdds);

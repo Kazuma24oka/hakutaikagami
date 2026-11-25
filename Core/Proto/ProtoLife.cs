@@ -194,7 +194,7 @@ public sealed partial class ProtoWorld
             foreach (var v in People.Where(v => v.Active && !v.Player && !v.Samurai && v.House != "bandit" && SiteOf(v) == null && Dist(v, b) <= 60_00))
             {
                 if (Flag($"robbed:{v.Id}:{day}")) continue; Set($"robbed:{v.Id}:{day}");
-                Happen($"robbery:{v.Id}:{day}", $"{v.Name}が峠道で賊に荷を奪われた。", v.X, v.Y, [v, .. bandits]);
+                Happen($"robbery:{v.Id}:{day}", $"{v.Name}が{(Dist(v, Pass.X, Pass.Y) <= 400_00 ? "峠道" : "道")}で賊に荷を奪われた。", v.X, v.Y, [v, .. bandits]);
                 v.Doing = "荷を奪われた";
             }
         // 岩切城主は、賊の話を聞いたら殿へ知らせを送る。
@@ -349,11 +349,11 @@ public sealed partial class ProtoWorld
         if (kind == "stance") return SetStance(id);
         if (kind == "kakare") return Kakare();
         if (kind == "tactic") return UseTactic(Player);
-        if (kind == "camp") { if (!id.StartsWith("move:")) return ""; var xy = id[5..].Split(','); return MoveCamp(long.Parse(xy[0]), long.Parse(xy[1])); }
+        if (kind == "camp") return CanMoveCamp ? SendAsk("camp", id) ?? DoCamp(id) : "";
         if (kind == "tactic-auto") { War.AutoTactic = id == "on"; return ""; }
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
-        if (kind == "siege") return id == "open" ? "" : id == "調略" ? Scheme() : id.StartsWith("勧告:") ? Recommend(id[3..]) : DecideSiege(id);
+        if (kind == "siege") return id == "open" ? "" : SiegeCouncilOpen ? SendAsk("siege", id) ?? DoSiege(id) : "";
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
         {

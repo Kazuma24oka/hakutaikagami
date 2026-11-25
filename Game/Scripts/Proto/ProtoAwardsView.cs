@@ -28,11 +28,13 @@ public partial class ProtoGame
         foreach (var m in new[] { "包囲", "力攻め" }) Pick(top, m, m, "siege:" + m, m == now);
         string stage = World.PlotStage;
         Pick(top, "調略", stage == "約束" ? "内応合図" : "調略", "siege:調略", stage == "約束", stage is "密書" or "断られた" or "済");
-        if (World.CanMoveCamp) { var mv = new Button { Text = "本陣移動", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; top.AddChild(mv); SiegeButtons["本陣移動"] = mv; }
+        var campRow = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; // 本陣移動は攻め方と別の行
+        if (World.CanMoveCamp) { var mv = new Button { Text = "本陣移動", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; campRow.AddChild(mv); SiegeButtons["本陣移動"] = mv; }
         var low = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; low.AddThemeConstantOverride("separation", 16); box.AddChild(low);
-        low.AddChild(new Label { Text = "勧告", Modulate = new Color(1, 0.9f, 0.6f) });
+        low.AddChild(new Label { Text = "勧告：", Modulate = new Color(0.62f, 0.62f, 0.62f) }); // 見出し（押せない）は灰色にして、ボタンと分ける
         foreach (var t in ProtoWorld.SurrenderTerms) Pick(low, "勧告:" + t, t, "siege:勧告:" + t, false, World.Talking);
-        var lines = new List<(string, string)>(); if (ProtoScene.Parse(World, World.SiegeSpeech) is { } said) lines.Add(said);
+        if (campRow.GetChildCount() > 0) { box.AddChild(new HSeparator()); box.AddChild(campRow); }
+        var lines = new List<(string, string)>(); if (World.LeadNear() && ProtoScene.Parse(World, World.SiegeSpeech) is { } said) lines.Add(said); // 総大将が遠ければ、面と向かっては話さない（頼みは使番が運ぶ）
         Scene.Show(lines, [World.Player.Id], box);
     }
 
@@ -60,7 +62,7 @@ public partial class ProtoGame
         {
             var c = a.Unit == World.Player.Id ? new Color(1, 0.88f, 0.45f) : Colors.White;
             string deed = a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—";
-            foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Unit == head ? "" : a.Merit.ToString(), true) })
+            foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
                 grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
         }
         col.AddChild(new HSeparator());

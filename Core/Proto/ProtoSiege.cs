@@ -169,7 +169,8 @@ public sealed partial class ProtoWorld
     public (long X, long Y)? PlayerSiegePost => War.Siege != null && War.Result == "" && InArmy(Player) ? SiegePost(Player) : null;
     // 攻城の軍議：本陣（300m）で、いつでも開ける（本陣を取られたあとは、総大将のそば）。
     public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player)
-        && (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 || CampMoveTarget is { } mv && Dist(Player, mv.X, mv.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00);
+        && (answering || (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 || CampMoveTarget is { } mv && Dist(Player, mv.X, mv.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00));
+    string DoSiege(string id) => id == "調略" ? Scheme() : id.StartsWith("勧告:") ? Recommend(id[3..]) : DecideSiege(id);
     string DecideSiege(string? want)
     {
         var s = War.Siege; if (s == null || War.Result != "") return "";

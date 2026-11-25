@@ -43,7 +43,7 @@ public partial class ProtoGame
         var layer = new CanvasLayer { Layer = 2 }; AddChild(layer);
         var root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore, Theme = new Theme { DefaultFontSize = 16 } }; root.SetAnchorsPreset(Control.LayoutPreset.FullRect); layer.AddChild(root);
 
-        spiritBox = new PanelContainer(); spiritBox.SetAnchorsPreset(Control.LayoutPreset.CenterTop); spiritBox.OffsetTop = 50; spiritBox.OffsetLeft = -380; spiritBox.OffsetRight = 380; root.AddChild(spiritBox);
+        spiritBox = new PanelContainer(); spiritBox.SetAnchorsPreset(Control.LayoutPreset.TopRight); spiritBox.OffsetTop = 60; spiritBox.OffsetRight = -460; spiritBox.OffsetLeft = -460 - 700; spiritBox.GrowHorizontal = Control.GrowDirection.Begin; root.AddChild(spiritBox); // 任務の窓の左に並べる（重ねない）
         var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; row.AddThemeConstantOverride("separation", 10); spiritBox.AddChild(row);
         row.AddChild(new Label { Text = "全軍士気", Modulate = new Color(1, 0.9f, 0.6f) }); row.AddChild(new VSeparator());
         row.AddChild(new Label { Text = "鷹野勢" }); spiritTakano = Bar(HouseColor("takano"), 150, new Vector2(170, 16)); row.AddChild(spiritTakano); spiritTakanoText = new Label(); row.AddChild(spiritTakanoText);
@@ -148,7 +148,7 @@ public partial class ProtoGame
     void UpdateBattleView()
     {
         ShowHits();
-        var war = World.War; bool on = (war.Phase == "合戦" || World.Returning) && war.Spirit.Count > 0;
+        var war = World.War; bool on = war.Phase == "合戦" && war.Result == "" && war.Spirit.Count > 0; // 決着したら消す
         spiritBox.Visible = on;
         if (on)
         {
@@ -176,8 +176,8 @@ public partial class ProtoGame
         // 本人の采配：本人とつながっているぶつかり合い（同じ敵と戦う味方、その敵と戦う味方…）を全部まとめて見せる。
         var mine = World.ClashOf(World.Player.Id);
         commandBox.Visible = mine != null;
-        // 合戦の窓が出ている間は、記録の窓をその左までに縮める（重ならないように）。
-        logPanel.OffsetRight = commandBox.Visible ? Math.Clamp(GetViewport().GetVisibleRect().Size.X - commandBox.Size.X - 24, 300, 700) : 700;
+        // 記録の窓は、合戦の窓が出ても重ならない幅にいつもしておく（出るたびに幅を変えない）。
+        logPanel.OffsetRight = Math.Clamp(GetViewport().GetVisibleRect().Size.X - 600 - 24, 300, 700);
         if (mine == null) { lastClash = ""; return; }
         var me = World.Player;
         var group = new HashSet<string> { me.Id }; var clashes = new List<ProtoClash>();

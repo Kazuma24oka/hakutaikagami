@@ -420,7 +420,12 @@ public partial class ProtoGame : Node3D
                 if (World.War.Siege == null && World.CampAt("takano") != null)
                     panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.CampPacking ? "本陣　撤収" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
-                if (World.War.Siege is { } siege)
+                if (World.War.Siege != null && World.War.Result != "")
+                {
+                    panel.AddChild(new Label { Text = "攻城　" + (World.War.Result == "開城させた" ? "開城" : World.War.Result == "鎮めた" ? "落城" : "退いた"), Modulate = World.War.Result is "開城させた" or "鎮めた" ? good : bad });
+                    panel.AddChild(new HSeparator());
+                }
+                else if (World.War.Siege is { } siege)
                 {
                     panel.AddChild(new Label { Text = "攻城　" + siege.Method, Modulate = new Color(1, 0.9f, 0.6f) });
                     panel.AddChild(new Label { Text = $"城の耐久　{siege.Gate}" });
@@ -481,7 +486,7 @@ public partial class ProtoGame : Node3D
         if (Message != messageShown) { messageShown = Message; messageAt = nowSec; }
         if (Message != "" && nowSec - messageAt > 8) { Message = ""; messageShown = ""; }
         message.Text = Message; message.Visible = Message != "";
-        var lines = string.Join((char)10, LogLines().TakeLast(logTab == "全部" ? 3 : 6).Select(e => HourMinute(e.At) + "　" + e.Text));
+        var lines = string.Join((char)10, LogLines().TakeLast((logTab == "全部" ? 3 : 6) - (Message != "" ? 1 : 0)).Select(e => HourMinute(e.At) + "　" + e.Text));
         logBody.Visible = !logMin; Buttons["log-min"].Text = logMin ? "＋" : "－";
         foreach (var t in LogTabs) Buttons["log-" + t].Disabled = logTab == t;
         if (lines != journalKey) { journalKey = lines; journalShown = Time.GetTicksMsec() / 1000.0; }
@@ -650,7 +655,7 @@ public partial class ProtoGame : Node3D
             var (body, label) = actors[p.Id]; bool seen = World.Sees(World.Player, p) && !World.Sheltered(p); // 城内の隊は描かない（城の欄にまとめる）
             bool unit = p.Soldiers > 0 && war;
             if (body.MaterialOverride is StandardMaterial3D m && !p.Player) m.AlbedoColor = HouseColor(p.House);
-            body.Visible = seen; label.Visible = seen && (p.Player || close || unit);
+            body.Visible = seen; label.Visible = seen && (p.Player || close || unit || p.House == "bandit" && p.Id == World.People.Where(b => b.House == "bandit" && b.Active).Select(b => b.Id).DefaultIfEmpty(p.Id).Min()); // 賊も札を出す（固まっているので、札は一つ）（名の無い足軽に見えないように。2026-11-25 擬人格の印）
             label.Text = unit ? $"{p.Name}　兵{p.Soldiers}" : p.Name;
             float grow = unit ? 1 + MathF.Sqrt(p.Soldiers) / 8 : 1, scale = Math.Max(1, distance / 450), r = (p.Player ? 7 : 5) * scale * grow; var pos = ToScene(p.X, p.Y) + new Vector3(0, r, 0);
             body.Position = pos; body.Scale = Vector3.One * scale * grow; label.Position = pos + new Vector3(0, r + distance * 0.035f, 0);
@@ -684,6 +689,7 @@ public partial class ProtoGame : Node3D
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
+            else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
         foreach (var mk in World.Markers)
@@ -700,7 +706,7 @@ public partial class ProtoGame : Node3D
             float sc = Math.Max(1, distance / 450);
             var at = ToScene(mk.X, mk.Y) + new Vector3(0, 6 * sc, 0);
             v.Body.Position = at; v.Body.Scale = Vector3.One * sc; v.Label.Position = at + new Vector3(0, 8 * sc + distance * 0.03f, 0);
-            v.Label.Text = $"{enemy.Name}　{HourMinute(mk.SeenAt)}（{mk.By}）";
+            v.Label.Text = enemy.Name; v.Label.Modulate = new Color(1, 0.75f, 0.75f, Math.Clamp(1 - age * 0.25f, 0.35f, 1)); // 名前だけ。古い知らせほど薄い（2026-11-25 擬人格の印）
             v.Body.Visible = v.Label.Visible = !now;
         }
     }

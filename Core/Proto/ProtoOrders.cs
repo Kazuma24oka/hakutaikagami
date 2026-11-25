@@ -122,7 +122,7 @@ public sealed partial class ProtoWorld
                 break;
             }
         }
-        steps.Add((hold ? "陣を守り抜く" : "敵を崩す", () => War.Result is "鎮めた" or "退かせた" || hold && War.Result == "守り抜いた" ? 1 : War.Result != "" ? 2 : 0));
+        steps.Add((hold ? "陣を守り抜く" : "敵を崩す", () => War.Result is "鎮めた" or "退かせた" or "開城させた" || hold && War.Result == "守り抜いた" ? 1 : War.Result != "" ? 2 : 0));
         return [.. steps];
     }
     public IEnumerable<ProtoPlanStep> PlanSteps()
