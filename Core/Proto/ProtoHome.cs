@@ -26,7 +26,7 @@ public sealed partial class ProtoWorld
     {
         if (War.Result != "")
         {
-            EndRelief(); UpdatePlan();
+            EndRelief(); UpdatePlan(); EnvoyBack();
             foreach (var t in Tasks.Where(t => t.Kind == "duty" && t.State is TaskState.Open or TaskState.Offered)) t.State = TaskState.Expired; // 決着したら、攻城の役目は解く
         } // どんな決着でも、後詰は沢渡へ引き上げる。作戦の最後の段（敵を崩す）も決着で決まる
         if (!Returning) return;
@@ -125,7 +125,7 @@ public sealed partial class ProtoWorld
     {
         int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = (DidRole(id) ? see : see / 2) + Deeds(id);
         if (id == Player.Id && Flag("parley-won")) m += 8; // 説いて城を開かせた
-        if (id == Player.Id) m += Math.Min(8, DutiesDone / 3) + (Flag("ichiban") ? 6 : 0);
+        if (id == Player.Id) m += Math.Min(8, DutiesDone / 3) + (Flag("ichiban") ? 6 : 0) + (Flag("sally-spotted") ? 3 : 0);
         if (War.Siege != null) m += Math.Min(6, War.Siege.Built.GetValueOrDefault(id) * 3); // 付城を築いた
         return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 + Deeds(id) : 0 });
     }
@@ -137,7 +137,8 @@ public sealed partial class ProtoWorld
         Set("awards-done");
         int m = WarMerit(Player.Id), back = Player.Soldiers; Merit += m; Player.Soldiers = 0;
         foreach (var t in Tasks.Where(t => t.Kind == "awards" && t.State == TaskState.Open).ToArray()) t.State = TaskState.Done;
-        Note(absent ? $"論功行賞は済んでいた。合戦の働きで勲功{m}。" : $"合戦の働きで勲功{m}。");
+        string what = War.Siege != null ? "攻城の働き" : "合戦の働き";
+        Note(absent ? $"論功行賞は済んでいた。{what}で勲功{m}。" : $"{what}で勲功{m}。");
         if (back > 0) Note($"預かった兵{back}を返した。");
         return "";
     }

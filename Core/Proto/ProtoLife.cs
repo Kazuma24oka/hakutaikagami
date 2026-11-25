@@ -463,7 +463,7 @@ public sealed partial class ProtoWorld
     }
     public string TaskPlace(ProtoTask t)
     {
-        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "scout") return "岩切城の前"; if (s.Do == "escort") return "小荷駄";
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do is "scout" or "letter") return "岩切城の前"; if (s.Do == "escort") return "小荷駄";
         var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
     }
     public long? TaskEta(ProtoTask t)

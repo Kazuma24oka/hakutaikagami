@@ -153,8 +153,10 @@ public partial class ProtoGame
         spiritBox.Visible = on;
         if (on)
         {
-            spiritTakano.Value = World.SpiritOf("takano"); spiritRebel.Value = World.SpiritOf("iwakiri");
-            spiritTakanoText.Text = World.SpiritOf("takano").ToString(); spiritRebelText.Text = World.SpiritOf("iwakiri").ToString();
+            // 籠城している城の士気は、物見で探ったときの値だけ（本人の知識）。探るまでは「？」。
+            int? rebel = World.War.Siege != null && World.Garrison.Any() ? World.SiegeKnownMorale : World.SpiritOf("iwakiri");
+            spiritTakano.Value = World.SpiritOf("takano"); spiritRebel.Value = rebel ?? 0;
+            spiritTakanoText.Text = World.SpiritOf("takano").ToString(); spiritRebelText.Text = rebel?.ToString() ?? "？";
         }
         // ぶつかっている所に剣の印（2026-11-19 ユーザーの図）。押し合いのゲージは地図には出さない（右下の窓にある）。
         DrawSwords();

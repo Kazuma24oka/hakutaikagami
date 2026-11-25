@@ -187,10 +187,11 @@ public partial class ProtoGame : Node3D
         }
     }
 
+    readonly Dictionary<string, Label3D> siteLabels = new();
     internal void AddModel(string model, string name, Vector3 pos, Color house, float scale = 1)
     {
         var node = ProtoSiteModels.Build(model, house); node.Position = pos; node.Scale = Vector3.One * scale; AddChild(node);
-        AddChild(new Label3D { Text = name, Position = pos + new Vector3(0, ProtoSiteModels.Height(model) * scale + 14, 0), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0011f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = new Color(1, 0.96f, 0.85f) });
+        AddChild(siteLabels[name] = new Label3D { Text = name, Position = pos + new Vector3(0, ProtoSiteModels.Height(model) * scale + 14, 0), Billboard = BaseMaterial3D.BillboardModeEnum.Enabled, FixedSize = true, PixelSize = 0.0011f, FontSize = 30, OutlineSize = 10, NoDepthTest = true, Modulate = new Color(1, 0.96f, 0.85f) });
     }
 
     // ちびコマ（甲冑アニメ工房のドット絵）：役と年で絵を選び、合戦の間は家の色の甲冑を着る（鷹野は紫、沢渡は朱、謀叛の岩切は黒漆）。
@@ -341,6 +342,7 @@ public partial class ProtoGame : Node3D
         panel = col;
 
         var bottom = logPanel = new PanelContainer { GrowVertical = Control.GrowDirection.Begin }; bottom.SetAnchorsPreset(Control.LayoutPreset.BottomLeft); bottom.OffsetTop = -10; bottom.OffsetBottom = -10; bottom.OffsetLeft = 10; bottom.OffsetRight = 700; root.AddChild(bottom);
+        bottom.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0.1f, 0.1f, 0.12f, 0.97f), ContentMarginLeft = 8, ContentMarginRight = 8, ContentMarginTop = 6, ContentMarginBottom = 6 }); // 記録の窓も透けない
         var log = new VBoxContainer(); bottom.AddChild(log);
         // 記録（2026-11-19 ユーザー「最小化と、種類でタブを分けたい。戦闘のダメージ、会話だけ、全部」）。
         var tabs = new HBoxContainer(); tabs.AddThemeConstantOverride("separation", 4); tabs.Theme = new Theme { DefaultFontSize = 15 }; log.AddChild(tabs);
@@ -440,7 +442,7 @@ public partial class ProtoGame : Node3D
                     panel.AddChild(new Label { Text = siege.CampAt == 0 ? "囲み　まだ" : World.OpenSectors == 0 ? "囲み　閉じている" : $"囲み　穴{World.OpenSectors}", Modulate = siege.CampAt > 0 && World.OpenSectors == 0 ? good : bad });
                     if (World.KnownCastleFood != "") panel.AddChild(new Label { Text = "城の兵糧　" + World.KnownCastleFood, Modulate = good });
                     if (World.KnownRelief != "") panel.AddChild(new Label { Text = "後詰　" + World.KnownRelief, Modulate = World.KnownRelief == "退けた" ? good : bad });
-                    if (World.Talking) panel.AddChild(new Label { Text = $"勧告　交渉中（{siege.Terms}）", Modulate = new Color(1, 0.88f, 0.45f) });
+                    if (World.Talking) panel.AddChild(new Label { Text = $"勧告　{siege.Terms}の返事待ち", Modulate = new Color(1, 0.88f, 0.45f) });
                     if (siege.Plot is "密書" or "約束") panel.AddChild(new Label { Text = siege.Plot == "密書" ? "調略　返書待ち" : "調略　内応の約束あり", Modulate = new Color(1, 0.88f, 0.45f) });
                     panel.AddChild(new HSeparator());
                 }
@@ -680,14 +682,22 @@ public partial class ProtoGame : Node3D
             var at = Camera.UnprojectPosition(l.GlobalPosition) + l.Offset * s * new Vector2(1, -1);
             return new Rect2(at.X - w / 2, at.Y - lineH / 2, w, lineH);
         }
-        foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr) placed.Add(fr);
+        // 札は、ほかの人の駒と本陣の旗にも重ねない（2026-11-25 擬人格の印）。
+        var bodies = new List<(string Id, Rect2 R)>();
+        foreach (var (id, dot) in dots) if (dot.Visible && !Camera.IsPositionBehind(dot.GlobalPosition)) { var at = Camera.UnprojectPosition(dot.GlobalPosition); bodies.Add((id, new Rect2(at.X - 16, at.Y - 48, 32, 48))); }
+        if (campIcon != null && campIcon.Visible && !Camera.IsPositionBehind(campIcon.GlobalPosition)) { float s = campIcon.PixelSize * k; var at = Camera.UnprojectPosition(campIcon.GlobalPosition); placed.Add(new Rect2(at.X - 12 * s, at.Y - 14 * s, 24 * s, 28 * s)); }
+        foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr)
+        {
+            if (fixedLabel != castleLabel && bodies.Any(b => b.R.Intersects(fr))) { fixedLabel.Visible = false; continue; } // 本陣の札が駒に重なるなら、旗だけにする
+            placed.Add(fr);
+        }
         foreach (var p in World.People.OrderByDescending(p => p.Player).ThenByDescending(p => p.Soldiers).ThenBy(p => p.Id))
         {
             var l = actors[p.Id].Label; l.Offset = Vector2.Zero;
             if (Box(l) is not { } r) continue;
             if (covers.Any(c => c.Intersects(r))) { l.Visible = false; continue; }
             float lineH = r.Size.Y;
-            for (int step = 0; step < 6 && placed.Any(q => q.Intersects(r)); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
+            for (int step = 0; step < 6 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r))); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
             placed.Add(r);
         }
     }

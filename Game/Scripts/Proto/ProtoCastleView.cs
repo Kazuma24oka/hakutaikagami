@@ -42,13 +42,15 @@ public partial class ProtoGame
         DrawRing(c, live && siege!.CampAt > 0);
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
         bool show = live && World.KnowsCastle();
-        castleLabel!.Visible = castleBar!.Visible = show; if (!show) return;
+        castleLabel!.Visible = castleBar!.Visible = show;
+        if (siteLabels.TryGetValue(World.Map.Site("iwakiri-castle").Name, out var nameLabel)) nameLabel.Visible = !show; // 城の欄に名前も入れる（札を二つ重ねない）
+        if (!show) return;
         int men = World.Garrison.Sum(u => u.Soldiers);
         string key = $"{siege!.Gate}|{men}";
         if (key != castleKey)
         {
             castleKey = key;
-            castleLabel.Text = $"門{siege.Gate}　兵{men}"; // 士気は上の帯（岩切勢＝城の士気）
+            castleLabel.Text = $"岩切城　門{siege.Gate}　兵{men}"; // 士気は上の帯（岩切勢＝城の士気）
             var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
             img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(siege.Gate, 0, 100) / 100), 6), new Color(0.85f, 0.85f, 0.9f));
             castleBar.Texture = ImageTexture.CreateFromImage(img);
