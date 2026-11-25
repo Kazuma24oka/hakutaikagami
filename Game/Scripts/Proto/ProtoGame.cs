@@ -334,6 +334,7 @@ public partial class ProtoGame : Node3D
 
         Add(bar, "panel", "任務", () => panelOpen = !(panelOpen ?? true));
         var side = sidePanel = new PanelContainer { CustomMinimumSize = new Vector2(440, 0), GrowHorizontal = Control.GrowDirection.Begin }; side.SetAnchorsPreset(Control.LayoutPreset.TopRight); side.OffsetLeft = -450; side.OffsetTop = 60; side.OffsetBottom = 60; side.OffsetRight = -10; root.AddChild(side);
+        foreach (var pc in new[] { top, side }) pc.AddThemeStyleboxOverride("panel", new StyleBoxFlat { BgColor = new Color(0.1f, 0.1f, 0.12f, 0.97f), ContentMarginLeft = 8, ContentMarginRight = 8, ContentMarginTop = 6, ContentMarginBottom = 6 }); // 窓の下の駒が透けて見えないように
         // 中身が長いときは窓の中で送る（画面の下にはみ出さない）。
         sideScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled }; side.AddChild(sideScroll);
         var col = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; sideScroll.AddChild(col);
@@ -670,6 +671,8 @@ public partial class ProtoGame : Node3D
     {
         float h = GetViewport().GetVisibleRect().Size.Y, k = h / (2 * Mathf.Tan(Mathf.DegToRad(Camera.Fov) / 2)); // 1単位の大きさが画面で何ドットか（同じ遠さで）
         var placed = new List<Rect2>();
+        // 窓や帯の下に入る札は出さない（2026-11-25 擬人格の印「札が士気の帯の裏に隠れる」）。
+        var covers = GetTree().Root.FindChildren("*", "PanelContainer", true, false).OfType<PanelContainer>().Where(c => c.IsVisibleInTree()).Select(c => c.GetGlobalRect()).ToList();
         Rect2? Box(Label3D l)
         {
             if (!l.Visible || l.Text == "" || Camera.IsPositionBehind(l.GlobalPosition)) return null;
@@ -682,6 +685,7 @@ public partial class ProtoGame : Node3D
         {
             var l = actors[p.Id].Label; l.Offset = Vector2.Zero;
             if (Box(l) is not { } r) continue;
+            if (covers.Any(c => c.Intersects(r))) { l.Visible = false; continue; }
             float lineH = r.Size.Y;
             for (int step = 0; step < 6 && placed.Any(q => q.Intersects(r)); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
             placed.Add(r);

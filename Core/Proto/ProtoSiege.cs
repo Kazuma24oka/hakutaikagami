@@ -38,6 +38,7 @@ public sealed class ProtoSiege
     public string Terms { get; set; } = "";
     public long TalksUntil { get; set; }  // 使者の返事が戻る時刻（0＝交渉していない。-1＝使者が城門へ向かっている）
     public long EnvoyBy { get; set; }     // 本人が使者のとき、ここまでに城門へ着かなければ別の者が行く
+    public string Envoy { get; set; } = ""; // 本人でない使者（城門まで歩いて行く）
     public string Plot { get; set; } = "";   // 調略：""・密書・約束・断られた・済
     public string PlotWith { get; set; } = "";
     public long PlotAt { get; set; }
@@ -45,6 +46,7 @@ public sealed class ProtoSiege
     public int[] FortWork { get; set; } = new int[6]; // 付城の普請（半分ずつの分）
     public bool[] Forts { get; set; } = new bool[6];
     public Dictionary<string, int> Duty { get; set; } = []; // 隊の受け持ちの持ち場
+    public Dictionary<string, int> Built { get; set; } = []; // 隊ごとの、築き上げた付城の数
     public string Relief { get; set; } = ""; // 後詰：""・使い・出陣・向かう・着いた・来ない・破れた
     public long ReliefAt { get; set; }
     public long ConvoyDay { get; set; } = -1;
@@ -185,7 +187,8 @@ public sealed partial class ProtoWorld
             s.FortWork[i] += work;
             if (s.FortWork[i] < FortHalfMinutes) continue;
             s.Forts[i] = true; var p = SectorPost(i);
-            Happen($"fort:{i}", $"岩切城の囲みに付城が築かれた（{SectorName(i)}）。", p.X, p.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+            foreach (var u in hold.Where(u => DutyOf(u) == i && Holds(u, i))) s.Built[u.Id] = s.Built.GetValueOrDefault(u.Id) + 1;
+            Happen($"fort:{i}", $"岩切城の囲みの{SectorName(i)}に付城が築かれた。", p.X, p.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
         }
     }
 
@@ -268,7 +271,15 @@ public sealed partial class ProtoWorld
         // 城へ逃げ込んだ隊は、城の兵に戻る（士気60まで立て直す）。
         foreach (var r in People.Where(r => r.House == Rebel && r.Active && r.Soldiers > 0 && InWalls(r) && War.Routed.Contains(r.Id) && r.Id != Nobunao).ToArray())
         { War.Routed.Remove(r.Id); War.AtCamp.Remove(r.Id); r.Morale = Math.Max(r.Morale, 60); r.Path = []; r.PathIndex = 0; r.Doing = "城を守っている"; }
-        var auto = takano.Where(u => Auto(u) && !War.Routed.Contains(u.Id)).ToArray();
+        var auto = takano.Where(u => Auto(u) && !War.Routed.Contains(u.Id) && !(u.Id == s.Envoy && s.TalksUntil != 0)).ToArray();
+        // 本人でない使者：城門まで歩き、着いたら門を叩く。返事が出たら持ち場へ戻る。
+        if (s.Envoy != "")
+        {
+            var e = Person(s.Envoy); var g = GatePoint;
+            if (s.TalksUntil == 0 || !e.Active) s.Envoy = "";
+            else if (s.TalksUntil == -1 && Dist(e, g.X, g.Y) <= 80_00) { s.TalksUntil = Second + 30 * 60; e.Path = []; e.PathIndex = 0; e.Doing = "使者として城門にいる"; Happen("envoy-at:" + Second, $"{e.Name}が使者として岩切城の門を叩いた。", e.X, e.Y, [.. People.Where(u => InArmy(u) && u.Active), Person(HeadOf(Rebel))]); }
+            else if (s.TalksUntil == -1 && !e.Moving) Walk(e, ProtoMove.Nearest(Map, g.X, g.Y), "城門", "使者として城門へ向かっている");
+        }
         foreach (var (id, tid) in War.Target.ToArray()) if (Person(id).House != Rebel && Sheltered(Person(tid))) War.Target.Remove(id);
         var lead = SiegeLead; var camp = SiegeCamp;
         if (s.CampAt == 0 && Dist(lead, camp.X, camp.Y) <= 150_00) { s.CampAt = Second; Happen("siege-camp", $"{lead.Name}勢は岩切城の前に陣を敷いた。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00)]); }
@@ -319,7 +330,7 @@ public sealed partial class ProtoWorld
             if (open > 0 && men > 0)
             {
                 s.Store = Math.Min(s.StoreAtStart, s.Store + open * men / 12);
-                Happen("smuggle:" + DayIndex, $"夜のうちに、囲みの穴から岩切城へ荷が運び込まれたらしい（穴{open}）。", lead.X, lead.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+                Happen("smuggle:" + DayIndex, $"夜のうちに、囲みの穴から岩切城へ荷が運び込まれたらしい。", lead.X, lead.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
             }
             if (open > 0 && s.Relief == "" && k.Active)
             {
@@ -339,6 +350,8 @@ public sealed partial class ProtoWorld
             }
             // 外から見える兆し：炊煙が細る・上がらない。これで城の兵糧の見込みが分かる。
             int food = CastleFoodDays;
+            // 蓄えが5日分を切ると、粥を薄めて食いつなぐ。兵糧切れが近いので、士気が毎朝少しずつ落ちる（2026-11-25 擬人格の印「士気が22日間60のまま」）。
+            if (food <= 5 && s.Store > 0 && men > 0) foreach (var r in Garrison.ToArray()) r.Morale = Math.Max(0, r.Morale - 5);
             if (food <= 14 && s.Store > 0) Happen("castle-food:low", "岩切城の炊煙が細くなった。蓄えが減っているらしい。", k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
             if (food <= 5 && s.Store > 0) Happen("castle-food:scarce", "岩切城の炊煙がほとんど上がらない。蓄えは乏しいらしい。", k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
             War.Stock["takano"] = Math.Max(0, War.Stock.GetValueOrDefault("takano", 0) - 1); AddSpirit("takano", -1);
@@ -496,6 +509,10 @@ public sealed partial class ProtoWorld
         }
     }
     public int DutiesDone => Tasks.Count(t => t.Kind == "duty" && t.State == TaskState.Done);
+    // 果たした攻城の役目の内訳（例：「普請4・見回り6」）。
+    public string DutiesText => string.Join("・", Tasks.Where(t => t.Kind == "duty" && t.State == TaskState.Done).GroupBy(t => t.Title switch { "付城の普請" => "普請", "夜の見回り" => "見回り", "小荷駄の護衛" => "護衛", "城の物見" => "物見", "勧告の使者" => "使者", _ => t.Title }).OrderByDescending(g => g.Count()).Select(g => g.Key + g.Count()));
+    // 攻城での受け持ち（論功行賞の役目の列）：総大将は本陣、付城を築いた隊は付城、ほかは囲み。本人は果たした役目。
+    public string SiegeRole(string id) => War.Siege == null ? "" : id == SiegeLead.Id ? "本陣" : War.Siege.Built.GetValueOrDefault(id) is > 0 and var n ? $"付城{n}" : id == Player.Id ? (DutiesDone > 0 ? "役目" : "") : "囲み";
 
     // ---- 勧告 ----
     public static readonly string[] SurrenderTerms = ["帰参", "退去", "切腹"];
@@ -516,15 +533,23 @@ public sealed partial class ProtoWorld
         if (s.ParleyAt >= 0 && Second / Day == s.ParleyAt / Day) return $"{lead.Name}「今日はもう使者を出した。」";
         if (!CommanderListens) return $"{lead.Name}「勧告など無用。」";
         if (terms == "帰参" && heir.Temper == "勇猛" && SpiritOf("takano") >= 60) return $"{lead.Name}「謀叛人をそのまま許せと申すか。ならぬ。」";
-        s.ParleyAt = Second; s.Terms = terms; if (s.Method != SiegeMethods[1]) { s.PrevMethod = s.Method; s.MethodAt = Second; } s.Method = SiegeMethods[1]; Set("siege-decided"); Set("envoy-mine");
+        s.ParleyAt = Second; s.Terms = terms; if (s.Method != SiegeMethods[1]) { s.PrevMethod = s.Method; s.MethodAt = Second; } s.Method = SiegeMethods[1]; Set("siege-decided"); flags.Remove("envoy-mine");
         foreach (var u in People.Where(InArmy)) War.Target.Remove(u.Id);
         Happen("envoy:" + Second, $"鷹野勢は岩切城へ降伏の使者を出すことにした。条件は、{TermsText(terms)}。", lead.X, lead.Y, [.. AbleArmy.Where(u => Dist(u, lead) <= 2500_00)]);
         // 使者は、兵のない本人が務める（城門まで歩く）。本人が兵を率いていれば、ほかの者が行く。
         if (Player.Soldiers == 0 && !OnDuty)
         {
-            s.TalksUntil = -1; s.EnvoyBy = Second + 2 * Hour; var g = GatePoint;
+            s.TalksUntil = -1; s.EnvoyBy = Second + 2 * Hour; var g = GatePoint; Set("envoy-mine"); // 本人が使者に立ったときだけ、開城が本人の手柄になる
             var t = Offer(lead.Id, "勧告の使者", "duty", Second + 30 * 60, Second + 2 * Hour, 0, new ProtoStep("envoy", "岩切城の城門へ行き、勧告を伝える", X: g.X, Y: g.Y)); t.State = TaskState.Open;
             return $"{lead.Name}「よかろう。そなたが使者に立て。城門へ行け。」";
+        }
+        // 本人が行けなければ、兵の少ない者が使者に立って城門まで歩く（誰が行ったか見えるように。2026-11-25 擬人格の印14）。
+        var who = AbleArmy.Where(u => u.Id != lead.Id && !u.Player && ClashOf(u.Id) == null).OrderBy(u => u.Soldiers).ThenBy(u => u.Id).FirstOrDefault();
+        if (who != null)
+        {
+            s.TalksUntil = -1; s.EnvoyBy = Second + 2 * Hour; s.Envoy = who.Id;
+            Happen("envoy-go:" + Second, $"{who.Name}が使者に立ち、岩切城の城門へ向かった。", who.X, who.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+            return $"{lead.Name}「よかろう。{who.Name}を使者に立てる。」";
         }
         s.TalksUntil = Second + 30 * 60;
         return $"{lead.Name}「よかろう。使者を出す。」";
@@ -657,7 +682,7 @@ public sealed partial class ProtoWorld
             if (Dist(nao, castle: true) <= 1500_00 && !War.Target.ContainsKey(nao.Id))
             {
                 var foe = AbleArmy.OrderBy(u => Dist(u, nao)).ThenBy(u => u.Id).FirstOrDefault();
-                if (foe != null) { War.Target[nao.Id] = foe.Id; if (s.Relief != "着いた") { s.Relief = "着いた"; Happen("relief-arrive", $"沢渡の後詰（{nao.Name}の隊）が岩切城の囲みに攻めかかった。", nao.X, nao.Y, [.. AbleArmy.Where(u => Dist(u, nao) <= 1500_00), nao]); } }
+                if (foe != null) { War.Target[nao.Id] = foe.Id; if (s.Relief != "着いた") { s.Relief = "着いた"; Happen("relief-arrive", $"沢渡の後詰の{nao.Name}の隊が、岩切城の囲みに攻めかかった。", nao.X, nao.Y, [.. AbleArmy.Where(u => Dist(u, nao) <= 1500_00), nao]); } }
             }
         }
     }

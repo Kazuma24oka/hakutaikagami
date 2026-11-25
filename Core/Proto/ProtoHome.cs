@@ -126,6 +126,7 @@ public sealed partial class ProtoWorld
         int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = (DidRole(id) ? see : see / 2) + Deeds(id);
         if (id == Player.Id && Flag("parley-won")) m += 8; // 説いて城を開かせた
         if (id == Player.Id) m += Math.Min(8, DutiesDone / 3) + (Flag("ichiban") ? 6 : 0);
+        if (War.Siege != null) m += Math.Min(6, War.Siege.Built.GetValueOrDefault(id) * 3); // 付城を築いた
         return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 + Deeds(id) : 0 });
     }
 

@@ -66,9 +66,9 @@ public partial class ProtoGame
             var c = a.Unit == World.Player.Id ? new Color(1, 0.88f, 0.45f) : Colors.White;
             string deed = a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—";
             // 本人は、攻城の毎日の役目と一番乗りも働きに出す（2026-11-25 擬人格の印09）。
-            if (a.Unit == World.Player.Id && World.DutiesDone > 0) deed = (deed == "—" ? "" : deed + "　") + $"攻城の役目{World.DutiesDone}";
+            if (a.Unit == World.Player.Id && World.DutiesDone > 0) deed = (deed == "—" ? "" : deed + "　") + World.DutiesText;
             if (a.Unit == World.Player.Id && World.Ichiban) deed += "　一番乗り";
-            foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
+            foreach (var (text, right) in new[] { (a.Name, false), (World.SiegeRole(a.Unit) is { Length: > 0 } sr ? (a.Role == "" ? sr : a.Role + "・" + sr) : a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
                 grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
         }
         col.AddChild(new HSeparator());
