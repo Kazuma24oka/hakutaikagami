@@ -432,6 +432,7 @@ public sealed partial class ProtoWorld
     // ---- 攻め手の兵糧：2日ごとに、鷹野城から小荷駄が3日分を運ぶ ----
     const string Konida = "konida";
     void AddKonida() => People.Add(new ProtoPerson { Id = Konida, Name = "小荷駄", House = "", Role = "小荷駄", Home = "takano-castle", Active = false, X = Map.Site("takano-castle").X * 100L, Y = Map.Site("takano-castle").Y * 100L, Doing = "" });
+    (long X, long Y) KonidaYard { get { var h = Map.Site("takano-castle"); return ProtoMove.Nearest(Map, h.X * 100L, h.Y * 100L + 70_00); } } // 鷹野城の門の外
     void Convoy()
     {
         var s = War.Siege!; var kd = People.FirstOrDefault(p => p.Id == Konida); if (kd == null || s.CampAt == 0) return;
@@ -441,9 +442,10 @@ public sealed partial class ProtoWorld
         bool escortHere = DutyStep("escort") != null && Dist(Player, home.X * 100L, home.Y * 100L) <= 120_00;
         if (Second % Day >= (escortHere ? 6 : 9) * Hour && Second % Day < 12 * Hour && Second % 60 == 0 && escortReady && s.ConvoyLeg == "" && DayIndex - s.ConvoyDay >= 2 && camp is { } c0)
         {
-            s.ConvoyDay = DayIndex; s.ConvoyLeg = "行き"; kd.Active = true; kd.X = home.X * 100L; kd.Y = home.Y * 100L; kd.Path = []; kd.PathIndex = 0;
+            s.ConvoyDay = DayIndex; s.ConvoyLeg = "行き"; kd.Active = true; (kd.X, kd.Y) = KonidaYard; kd.Path = []; kd.PathIndex = 0;
             Walk(kd, ProtoMove.Nearest(Map, c0.X, c0.Y + 60_00), "本陣", "兵糧を本陣へ運んでいる"); Set("convoy:" + DayIndex);
         }
+        if (DutyStep("escort") != null && People.FirstOrDefault(b => b.House == "bandit" && b.Active && Dist(b, Player) <= 250_00) is { } bd) Happen("bandit-eye:" + DayIndex, "道の脇で賊が数人こちらをうかがっていたが、侍と見て手は出してこなかった。", Player.X, Player.Y, [Player]);
         if (s.ConvoyLeg == "行き" && Escorted(kd) && People.Any(b => b.House == "bandit" && b.Active && Dist(b, kd) <= 250_00)) Happen("bandit-eye:" + DayIndex, "道の脇で賊が小荷駄の様子をうかがっていたが、護衛の侍を見て引き下がった。", kd.X, kd.Y, [Player]);
         if (s.ConvoyLeg == "行き" && Flag($"robbed:{Konida}:{DayIndex}")) { s.ConvoyLeg = "帰り"; Walk(kd, (home.X * 100L, home.Y * 100L), home.Id, "鷹野城へ逃げ帰っている"); return; }
         if (s.ConvoyLeg == "行き" && camp is { } c && !kd.Moving && Dist(kd, c.X, c.Y) <= 120_00)
@@ -486,7 +488,7 @@ public sealed partial class ProtoWorld
             ProtoTask? t = null;
             if (convoy)
             {
-                var esc = Offer(lead.Id, "小荷駄の護衛", "duty", Second + 2 * Hour, dl, 0, new ProtoStep("escort", "鷹野城から本陣まで小荷駄を送る。着きしだい出る", Person: Konida)); var kd = Person(Konida); var hm = Map.Site("takano-castle"); kd.Active = true; kd.X = hm.X * 100L; kd.Y = hm.Y * 100L; kd.Path = []; kd.PathIndex = 0; kd.Doing = "荷を積んでいる";
+                var esc = Offer(lead.Id, "小荷駄の護衛", "duty", Second + 2 * Hour, dl, 0, new ProtoStep("escort", "鷹野城から本陣まで小荷駄を送る。着きしだい出る", Person: Konida)); var kd = Person(Konida); var hm = Map.Site("takano-castle"); kd.Active = true; (kd.X, kd.Y) = KonidaYard; kd.Path = []; kd.PathIndex = 0; kd.Doing = "荷を積んでいる";
                 ProtoTask other;
                 if (open > 0) { var bp = SectorPost(open); other = Offer(lead.Id, "付城の普請", "duty", Second + 2 * Hour, Second + 12 * Hour, 0, new ProtoStep("build", $"{SectorName(open)}で付城の普請を手伝う", X: bp.X, Y: bp.Y)); flags["duty-need:" + other.Id] = Math.Clamp((18 * Hour - tod) / 60 - 60, 60, 6 * 60); }
                 else { string[] pool = ["scout", "letter", "lookout"]; other = SiegeDuty(pool[Math.Abs(Roll("duty-pick:" + DayIndex)) % 3], lead); }
@@ -507,7 +509,7 @@ public sealed partial class ProtoWorld
             {
                 // その日まだ務めていないもの（物見・矢文・見張りの順）。
                 bool scoutedYesterday = Facts.Any(f => f.Id == "castle-scout:" + (DayIndex - 1));
-                var left = new[] { "scout", "letter", "lookout" }.Where(w => !done.Contains(w) && !(w == "scout" && scoutedYesterday)).ToArray(); if (left.Length == 0) left = ["lookout"];
+                var left = new[] { "scout", "lookout" }.Where(w => !done.Contains(w) && !(w == "scout" && scoutedYesterday)).ToArray(); if (left.Length == 0) left = ["lookout"];
                 string what = left[Math.Abs(Roll("pm-duty:" + DayIndex)) % left.Length];
                 t = SiegeDuty(what, lead);
             }
@@ -532,7 +534,7 @@ public sealed partial class ProtoWorld
                 if (Second % (20 * 60) == 0) { int i = (Enumerable.Range(0, Sectors).OrderBy(j => Dist(Player, SectorPost(j).X, SectorPost(j).Y)).First() + 1) % Sectors; /* 隣の持ち場へ（城の中を通らない） */ var c = Map.Site(FoeCastle); var sp = SectorPost(i); double dx = sp.X - c.X * 100L, dy = sp.Y - c.Y * 100L, len = Math.Max(1, Math.Sqrt(dx * dx + dy * dy)); Walk(Player, ProtoMove.Nearest(Map, sp.X + (long)(dx / len * 60_00), sp.Y + (long)(dy / len * 60_00)), SectorName(i), "囲みを見回っている"); }
                 else if (!Player.Moving) Player.Doing = "囲みを見回っている";
             }
-            else if (Dist(Player, tx, ty) > (gs.Do == "watch" ? 500_00 : gs.Do == "escort" ? 20_00 : 60_00)) { var (wx, wy) = RingWay(tx, ty); Walk(Player, ProtoMove.Nearest(Map, wx, wy), TaskPlace(go), go.Title + "に向かっている"); }
+            else if (Dist(Player, tx, ty) > (gs.Do == "watch" ? 500_00 : gs.Do == "escort" ? 20_00 : 60_00)) { var (wx, wy) = RingWay(tx, ty); Walk(Player, ProtoMove.Nearest(Map, wx, wy), TaskPlace(go), gs.Do == "escort" && War.Siege?.ConvoyLeg == "行き" && Dist(Player, Person(Konida)) <= 150_00 ? "小荷駄について歩いている" : go.Title + "に向かっている"); }
             else Player.Doing = go.Title switch { "付城の普請" => "付城の普請を手伝っている", "夜の見回り" => night ? "囲みを見回っている" : "見回りに備えている", "小荷駄の護衛" => "小荷駄について歩いている", "城の物見" => "城の様子を探っている", "矢文" => "矢文を射込んでいる", "付城の見張り" => "付城の櫓から城を見張っている", _ => go.Title };
         }
         // 役目の進み：その場にいた時間を数える。
@@ -686,10 +688,10 @@ public sealed partial class ProtoWorld
         // 本人が使者なのに2時間で城門へ着かなければ、別の者が行く。
         if (s.TalksUntil == -1 && s.Envoy == "" && Second >= s.EnvoyBy)
         {
-            foreach (var t in Tasks.Where(t => t.Kind == "duty" && t.State == TaskState.Open && t.Current?.Do == "envoy").ToArray()) { t.State = TaskState.Failed; AddFavor(t.Giver, -10); Note($"申し付けられた「勧告の使者」に行かなかった。{lead.Name}の機嫌を損ねた。"); }
+            foreach (var t in Tasks.Where(t => t.Kind == "duty" && t.State == TaskState.Open && t.Current?.Do == "envoy").ToArray()) { t.State = TaskState.Failed; AddFavor(t.Giver, -10); Note($"申し付けられた「勧告の使者」に行かなかった。{lead.Name}の機嫌を損ねた。"); flags.Remove("envoy-mine"); Set("envoy-shirked"); }
             var who = People.Where(u => InArmy(u) && u.Active && u.Id != lead.Id && !u.Player && !War.Routed.Contains(u.Id) && ClashOf(u.Id) == null).OrderBy(u => u.Soldiers).ThenBy(u => u.Id).FirstOrDefault();
             if (who == null) s.TalksUntil = Second + 30 * 60;
-            else { s.EnvoyBy = Second + 2 * Hour; s.Envoy = who.Id; s.EnvoyMen = who.Soldiers; who.Soldiers = 0; War.Target.Remove(who.Id); Happen("envoy-go:" + Second, $"使者が来ないので、{who.Name}が代わりに使者に立ち、岩切城の城門へ向かった。", who.X, who.Y, [.. People.Where(u => InArmy(u) && u.Active)]); }
+            else { s.EnvoyBy = Second + 2 * Hour; s.Envoy = who.Id; s.EnvoyMen = who.Soldiers; who.Soldiers = 0; War.Target.Remove(who.Id); Happen("envoy-go:" + Second, $"使者が来ないので、{who.Name}が代わりに使者に立ち、岩切城の城門へ向かった。", who.X, who.Y, [.. People.Where(u => InArmy(u) && u.Active && Dist(u, who) <= NewsRange)]); }
         }
         if (s.TalksUntil > 0 && Second >= s.TalksUntil)
         {
@@ -706,6 +708,7 @@ public sealed partial class ProtoWorld
             Happen("plot-reply", yes ? $"{t.Name}から、内応を約す返書が届いた。" : $"{t.Name}からの返書は来なかった。", lead.X, lead.Y, lead, Player);
         }
     }
+    const long NewsRange = 500_00; // これより遠い者には、使番が知らせを運ぶ（本人の知識）
     // 本人でない使者が戻る：置いていった兵を返す。
     void EnvoyBack(bool force = true)
     {
@@ -725,10 +728,11 @@ public sealed partial class ProtoWorld
             "退去" => $"{k.Name}は勧告を受け、城を明け渡して去った。" + (rest != "" ? $"{rest}は城に残り、鷹野に降った。" : ""),
             _ => $"{k.Name}は城兵の命と引き換えに腹を切り、岩切城は開いた。" + (rest != "" ? $"{rest}は鷹野に降った。" : ""),
         };
-        Happen("castle-open", text, k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active), k]);
+        Happen("castle-open", text, k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active && Dist(u, castle: true) <= NewsRange), k]);
+        if (Dist(Player, castle: true) > NewsRange) flags["news-open"] = Second + Dist(Player, castle: true) / RunnerSpeed;
         foreach (var r in People.Where(r => r.House == Rebel).ToArray())
         {
-            r.Path = []; r.PathIndex = 0;
+            r.Path = []; r.PathIndex = 0; if (r.Active) { var gp = GatePoint; r.X = gp.X + (r.Id == k.Id ? 20_00 : -20_00); r.Y = gp.Y - 30_00; } // 降った者は城門の内に控える（論功行賞の場で本人と重ならない）
             if (r.Id == k.Id && terms != "帰参") { r.Active = false; r.Doing = terms == "退去" ? "城を明け渡して去った" : "腹を切った"; continue; }
             r.House = "takano"; r.Doing = "帰参した"; if (r.Id == k.Id) r.Loyalty = Math.Max(r.Loyalty, 55);
         }
@@ -845,8 +849,8 @@ public sealed partial class ProtoWorld
     {
         var k = Person(HeadOf(Rebel)); EndRelief(); War.Result = "開城させた"; War.Phase = "終わり";
         var gave = People.Where(r => r.House == Rebel && r.Active && r.Id != Nobunao).Select(r => r.Name).ToArray();
-        Happen("castle-open", text + (gave.Length > 0 ? $"{string.Join("と", gave)}は城を明け渡して降った。" : ""), k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active && Dist(u, castle: true) <= 1000_00), k]);
-        if (Dist(Player, castle: true) > 1000_00) flags["news-open"] = Second + Dist(Player, castle: true) / RunnerSpeed;
+        Happen("castle-open", text + (gave.Length > 0 ? $"{string.Join("と", gave)}は城を明け渡して降った。" : ""), k.X, k.Y, [.. People.Where(u => InArmy(u) && u.Active && Dist(u, castle: true) <= NewsRange), k]);
+        if (Dist(Player, castle: true) > NewsRange) flags["news-open"] = Second + Dist(Player, castle: true) / RunnerSpeed;
         foreach (var r in People.Where(r => r.House == Rebel)) { r.Active = false; r.Path = []; r.PathIndex = 0; r.Doing = "降った"; }
         War.Clashes.Clear(); War.Target.Clear();
     }

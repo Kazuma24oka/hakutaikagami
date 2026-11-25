@@ -188,7 +188,7 @@ public partial class ProtoGame : Node3D
     }
 
     readonly Dictionary<string, Label3D> siteLabels = new();
-    bool campLabelBlocked, castleLabelCovered; // 本陣の札を旗だけにする（Unclutter が決め、本陣の描き方が守る）
+    bool campLabelBlocked, castleLabelCovered; readonly HashSet<string> siteHidden = new(); // 本陣の札を旗だけにする（Unclutter が決め、本陣の描き方が守る）
     internal void AddModel(string model, string name, Vector3 pos, Color house, float scale = 1)
     {
         var node = ProtoSiteModels.Build(model, house); node.Position = pos; node.Scale = Vector3.One * scale; AddChild(node);
@@ -695,7 +695,8 @@ public partial class ProtoGame : Node3D
         if (castleLabel != null && castleBar != null && castleLabelCovered && World.War.Siege != null && World.War.Result == "") castleLabel.Visible = true;
         castleLabelCovered = false;
         var meBox = Box(actors[World.Player.Id].Label);
-        foreach (var sl in siteLabels.Values) if (Box(sl) is { } sr) { if (meBox is { } mb && mb.Intersects(sr)) { sl.Visible = false; continue; } placed.Add(sr); }
+        siteHidden.Clear();
+        foreach (var (sn, sl) in siteLabels) if (Box(sl) is { } sr) { if (meBox is { } mb && mb.Intersects(sr)) { sl.Visible = false; siteHidden.Add(sn); continue; } placed.Add(sr); }
         foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr)
         {
             // 本陣の札は、寄りでは出さない（陣と旗で分かる）。引きでも、駒や本人の札に重なるなら旗だけにする。
@@ -715,7 +716,7 @@ public partial class ProtoGame : Node3D
             for (; step < 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r))); step++) { r.Position -= new Vector2(0, lineH); l.Offset += new Vector2(0, l.FontSize * 1.15f); }
             if (step == 3 && (placed.Any(q => q.Intersects(r)) || bodies.Any(b => b.Id != p.Id && b.R.Intersects(r)))) { r = r0; l.Offset = Vector2.Zero; if (!p.Player) { l.Visible = false; continue; } } // ずらしても重なるなら、本人の札は元の場所、ほかの人の札は出さない
             placed.Add(r);
-            if (p.Player) foreach (var sl in siteLabels.Values) if (Box(sl) is { } s2 && s2.Intersects(r)) sl.Visible = false; // 本人の札にかかる拠点の札は出さない
+            if (p.Player) foreach (var (sn, sl) in siteLabels) if (Box(sl) is { } s2 && s2.Intersects(r)) { sl.Visible = false; siteHidden.Add(sn); } // 本人の札にかかる拠点の札は出さない
         }
     }
     // 小荷駄の荷車：人足の後ろに、米俵を積んだ車（2026-11-26 擬人格の印「小荷駄が人足一人」）。
@@ -785,7 +786,7 @@ public partial class ProtoGame : Node3D
             else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
         DrawCart();
-        foreach (var (nm, sl) in siteLabels) if (nm != World.Map.Site("iwakiri-castle").Name) sl.Visible = true; // 隠した拠点の札は、重なりを確かめ直す前に戻す
+        foreach (var sl in siteLabels.Values) sl.Visible = true; // 隠した拠点の札は、重なりを確かめ直す前に戻す
         Unclutter();
         if (Scene.Open) { foreach (var (_, ac) in actors) ac.Label.Visible = false; foreach (var sl in siteLabels.Values) sl.Visible = false; if (campLabel != null) campLabel.Visible = false; }
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
@@ -965,6 +966,7 @@ public partial class ProtoGame : Node3D
             long len = (long)Math.Sqrt((double)(b.X - a.Item1) * (b.X - a.Item1) + (double)(b.Y - a.Item2) * (b.Y - a.Item2)); int parts = (int)Math.Clamp(len / 1000, 1, 200);
             for (int k = 1; k <= parts; k++) { long x = a.Item1 + (b.X - a.Item1) * k / parts, y = a.Item2 + (b.Y - a.Item2) * k / parts; points.Add(ToScene(x, y)); }
         }
+        float skip = 30 * Math.Max(1, distance / 450); while (points.Count > 2 && points[1].DistanceTo(points[0]) < skip) points.RemoveAt(1); if (points.Count > 1) points.RemoveAt(0);
         if (points.Count < 2) return;
         float half = Math.Max(1.5f, distance / 260);
         pathMesh.SurfaceBegin(Mesh.PrimitiveType.TriangleStrip);

@@ -281,7 +281,7 @@ public sealed partial class ProtoWorld
         if (!War.Assign.TryGetValue(Player.Id, out var a)) return "";
         War.PlayerFollows = on; if (!on) return "";
         War.Target.Remove(Player.Id);
-        if (Flag("plan-failed")) return "";
+        if (Flag("plan-failed") || War.Result != "" || War.Siege != null) return ""; // 攻城になってからは、野戦の陣へは向かわない
         if (War.Split) MarchTo(Player, PostOf(Player.Id));
         else if (Flag("marched")) Walk(Player, (War.StageX, War.StageY), "着陣の地", $"{Person(Heir).Name}勢として兵を進めている");
         return "";

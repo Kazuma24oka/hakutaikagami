@@ -60,7 +60,7 @@ public sealed partial class ProtoWorld
         if (CampAt("takano") is not { } c || CampLost("takano") || flags.ContainsKey("camp-pack")) return;
         if (War.CampMoveTo is { } to) { if (Second < War.CampMoveUntil) return; War.Camp["takano"] = to; War.CampMoveTo = null; } // 移している最中なら、移し終えてから畳む（2026-11-21 ユーザー）
         flags["camp-pack"] = Second; var lead = Person(Heir).Active ? Person(Heir) : Person(Karou);
-        Happen("camp-pack", $"{lead.Name}勢は本陣を畳み始めた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+        Happen("camp-pack", $"{lead.Name}勢は本陣を畳み始めた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active && (!u.Player || Dist(u, c.X, c.Y) <= 800_00))]); // 遠くの本人は、使番の知らせで知る
     }
     void UpdatePacking()
     {

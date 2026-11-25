@@ -43,7 +43,7 @@ public partial class ProtoGame
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
         bool show = live && World.KnowsCastle();
         castleLabel!.Visible = show && !castleLabelCovered; castleBar!.Visible = castleLabel.Visible;
-        if (siteLabels.TryGetValue(World.Map.Site("iwakiri-castle").Name, out var nameLabel)) nameLabel.Visible = !show && !Scene.Open; // 城の欄に名前も入れる（札を二つ重ねない）
+        if (siteLabels.TryGetValue(World.Map.Site("iwakiri-castle").Name, out var nameLabel)) nameLabel.Visible = !show && !Scene.Open && !siteHidden.Contains(nameLabel.Text); // 城の欄に名前も入れる（札を二つ重ねない）
         if (!show) return;
         int men = World.Garrison.Sum(u => u.Soldiers);
         string key = $"{siege!.Gate}|{men}";

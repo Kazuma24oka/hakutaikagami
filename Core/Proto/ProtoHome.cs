@@ -130,6 +130,7 @@ public sealed partial class ProtoWorld
         if (id == Player.Id) m += Math.Min(8, DutiesDone / 3) + (Flag("ichiban") ? 6 : 0) + (Flag("sally-spotted") ? 3 : 0);
         if (War.Siege != null) m += Math.Min(6, War.Siege.Built.GetValueOrDefault(id) * 3); // 付城を築いた
         if (Flag("envoy-won:" + id)) m += 6; // 使者に立って城を開かせた
+        if (id == Player.Id && Flag("envoy-shirked")) m -= 6; // 申し付けられた使者を放り出した
         return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 + Deeds(id) : 0 });
     }
 
