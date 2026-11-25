@@ -331,7 +331,8 @@ public sealed partial class ProtoWorld
         }
         // 委任／手動は、隊が崩れていても切り替えられる。
         if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(Player.Id) && War.Assign[Player.Id] != "takano-castle") yield return War.PlayerFollows ? new("order:free", "手動") : new("order:follow", "委任");
-        foreach (var t in OffersHere) { yield return new("accept:" + t.Id, "受諾：" + t.Title); yield return new("decline:" + t.Id, "辞退：" + t.Title); }
+        foreach (var t in DutyChoices) yield return new("pick:" + t.Id, "役目：" + t.Title);
+        foreach (var t in OffersHere.Where(t => !flags.ContainsKey("choice:" + t.Id))) { yield return new("accept:" + t.Id, "受諾：" + t.Title); yield return new("decline:" + t.Id, "辞退：" + t.Title); }
         foreach (var t in OpenTasks)
         {
             var s = t.Current; if (s == null) continue;
@@ -357,6 +358,7 @@ public sealed partial class ProtoWorld
         if (kind == "tactic-auto") { War.AutoTactic = id == "on"; return ""; }
         if (kind == "council") return "";
         if (kind == "awards") return TakeAwards();
+        if (kind == "pick") return PickDuty(id);
         if (kind == "siege") return id == "open" ? "" : SiegeCouncilOpen ? SendAsk("siege", id) ?? DoSiege(id) : "";
         var t = Tasks.First(x => x.Id == id); var giver = Person(t.Giver);
         switch (kind)
@@ -463,7 +465,7 @@ public sealed partial class ProtoWorld
     }
     public string TaskPlace(ProtoTask t)
     {
-        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do is "scout" or "letter") return "岩切城の前"; if (s.Do == "escort") return "小荷駄";
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do == "build") return SectorAt(s.X, s.Y) ?? "岩切城の囲み"; if (s.Do == "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do is "scout" or "letter") return "岩切城の前"; if (s.Do == "lookout") return SectorAt(s.X, s.Y) ?? "付城"; if (s.Do == "escort") return "小荷駄";
         var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
     }
     public long? TaskEta(ProtoTask t)

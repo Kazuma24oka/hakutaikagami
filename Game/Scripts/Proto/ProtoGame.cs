@@ -397,7 +397,7 @@ public partial class ProtoGame : Node3D
         // 「任務」の窓（2026-11-19 ユーザー）：軍令（軍議で決まった各隊の役目と行き先、合戦の指図）と依頼（頼まれごと・話す）をタブで切り替える。
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
-        static bool IsWarAction(string id) => id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
+        static bool IsWarAction(string id) => id.StartsWith("pick:") || id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
         var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + World.CampPacking + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.CampAt + sg.Ringed + World.OpenSectors + string.Join("", sg.Forts) + sg.TalksUntil + sg.Plot + World.RumorUsed + World.KnownRelief : "");
         if (key != panelKey)
         {
@@ -692,8 +692,10 @@ public partial class ProtoGame : Node3D
         }
         if (campIcon != null && campIcon.Visible && !Camera.IsPositionBehind(campIcon.GlobalPosition)) { float s = campIcon.PixelSize * k; var at = Camera.UnprojectPosition(campIcon.GlobalPosition); placed.Add(new Rect2(at.X - 12 * s, at.Y - 14 * s, 24 * s, 28 * s)); }
         if (campLabel != null && campIcon != null && campIcon.Visible) campLabel.Visible = true; // 隠していても、重なるかは毎回確かめ直す
+        if (castleLabel != null && castleBar != null && castleLabelCovered && World.War.Siege != null && World.War.Result == "") castleLabel.Visible = true;
         castleLabelCovered = false;
-        foreach (var sl in siteLabels.Values) if (Box(sl) is { } sr) placed.Add(sr);
+        var meBox = Box(actors[World.Player.Id].Label);
+        foreach (var sl in siteLabels.Values) if (Box(sl) is { } sr) { if (meBox is { } mb && mb.Intersects(sr)) { sl.Visible = false; continue; } placed.Add(sr); }
         foreach (var fixedLabel in new[] { campLabel, campGhostLabel, castleLabel }) if (fixedLabel != null && IsInstanceValid(fixedLabel) && Box(fixedLabel) is { } fr)
         {
             // 本陣の札は、寄りでは出さない（陣と旗で分かる）。引きでも、駒や本人の札に重なるなら旗だけにする。
@@ -753,17 +755,17 @@ public partial class ProtoGame : Node3D
                 bool inBody = World.InHost(p), bodyLead = inBody && p.Id == World.HeadOf("takano");
                 var host = bodyLead ? World.Host.OrderByDescending(u => u.Id == p.Id).ThenBy(u => u.Id).ToArray() : [];
                 bool group = inLine && fm.Count > 1;
-                if (bodyLead && host.Length > 1) DrawCard(p, foot, card && seen, p.Name + "勢", host.Sum(u => u.Soldiers), string.Join("+", host.Select(u => u.Soldiers)));
-                else DrawCard(p, foot, card && seen && !inBody && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, group ? fm.Parts : "");
+                if (bodyLead && host.Length > 1) DrawCard(p, foot, card && seen, p.Name + "勢", host.Sum(u => u.Soldiers), "");
+                else DrawCard(p, foot, card && seen && !inBody && !(inLine && fm.Count == 0), group ? p.Name + "勢" : p.Name, group ? fm.Total : p.Soldiers, "");
                 DrawSwirl(p, foot, seen && unit && World.Confused(p.Id), card);
                 // 謀叛方の隊の名前は足元の下に出す（ぶつかっている相手の名前と重ならないように）。
                 label.Position = p.House == "iwakiri" && unit ? foot + new Vector3(0, -6 * px - distance * 0.02f, 0) : foot + new Vector3(0, 30 * px + distance * 0.02f, 0);
             }
             else DrawFollowers(p, Vector3.Zero, 0, false, "idle"); // ちびコマを描かない人（城を去った・絵が無い）の足軽を前の場所に残さない（2026-11-25 擬人格の印「名前の札のない足軽」）
         }
+        foreach (var (nm, sl) in siteLabels) if (nm != World.Map.Site("iwakiri-castle").Name) sl.Visible = true; // 隠した拠点の札は、重なりを確かめ直す前に戻す
         Unclutter();
         if (Scene.Open) { foreach (var (_, ac) in actors) ac.Label.Visible = false; foreach (var sl in siteLabels.Values) sl.Visible = false; if (campLabel != null) campLabel.Visible = false; }
-        else foreach (var (nm, sl) in siteLabels) if (nm != World.Map.Site("iwakiri-castle").Name) sl.Visible = true;
         // 見えない敵の「最後に見た場所と時刻」の印。古いほど薄い。
         foreach (var mk in World.Markers)
         {

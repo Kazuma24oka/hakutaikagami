@@ -129,7 +129,7 @@ public sealed partial class ProtoWorld
         {
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
             int was = b.Soldiers; b.Soldiers = Math.Max(0, b.Soldiers - loss);
-            if (b.Player && was > 0 && b.Soldiers == 0) Note(War.Routed.Contains(id) ? "追い討ちを受け、預かった兵をすべて失った。" : "預かった兵をすべて失った。");
+            if (b.Player && was > 0 && b.Soldiers == 0) Note(War.Routed.Contains(id) ? $"退くところを{War.Clashes.Where(c => c.A == id || c.B == id).Select(c => Person(c.A == id ? c.B : c.A).Name).FirstOrDefault() ?? "敵"}に追われ、残っていた兵{was}をすべて失った。" : $"残っていた兵{was}をすべて失った。");
             War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = War.Routed.Contains(id) ? "追い討ち" : rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
             // 士気：倒れた割合ぶん下がり、背後5・側面2がさらに下がる。混乱している間は下がりが1.5倍。
             double drop = Math.Ceiling(loss * 100.0 / Math.Max(1, was) * (b.Player && War.Stance == "防御" ? 0.5 : 1)) + (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0);
