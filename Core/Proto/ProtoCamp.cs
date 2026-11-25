@@ -68,7 +68,7 @@ public sealed partial class ProtoWorld
         if (War.CampMoveTo is { } to && Second >= War.CampMoveUntil) { War.Camp["takano"] = to; War.CampMoveTo = null; }
         if (!CampPacking || Second < flags["camp-pack"] + PackTime) return;
         var c = CampAt("takano")!.Value; Set("camp-packed");
-        Happen("camp-packed", "本陣を畳み終えた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active)]);
+        Happen("camp-packed", "本陣を畳み終えた。", c.X, c.Y, [.. People.Where(u => InArmy(u) && u.Active && (!u.Player || Dist(u, c.X, c.Y) <= 800_00))]);
     }
     // 本陣のまわりの、隊ごとに少しずらした所（集まるとき・退くとき）。
     // 本陣のまわり：真ん中（本陣の札）と、兵のない本人が控える入口の脇を避けて、140m の輪の上の7か所に分ける（札が重ならないように。2026-11-25 擬人格の印）。

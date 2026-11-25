@@ -282,7 +282,7 @@ public sealed partial class ProtoWorld
             var home = SiegePost(e);
             if (!e.Active || s.TalksUntil == 0 && Dist(e, home.X, home.Y) <= 120_00) EnvoyBack(); // 持ち場に戻ってから兵を返す（城門の前で兵を戻すと、そのまま門を攻めてしまう）
             else if (s.TalksUntil == 0) { if (!e.Moving) { var (wx, wy) = RingWay(home.X, home.Y, e); Walk(e, ProtoMove.Nearest(Map, wx, wy), "囲みの陣", "持ち場へ戻っている"); } }
-            else if (s.TalksUntil == -1 && Dist(e, g.X, g.Y) <= 80_00) { s.TalksUntil = Second + 30 * 60; e.Path = []; e.PathIndex = 0; e.Doing = "使者として城門にいる"; Happen("envoy-at:" + Second, $"{e.Name}が使者として岩切城の門を叩いた。", e.X, e.Y, [.. People.Where(u => InArmy(u) && u.Active), Person(HeadOf(Rebel))]); }
+            else if (s.TalksUntil == -1 && Dist(e, g.X, g.Y) <= 80_00) { s.TalksUntil = Second + 30 * 60; e.Path = []; e.PathIndex = 0; e.Doing = "使者として城門にいる"; Happen("envoy-at:" + Second, $"{e.Name}が使者として岩切城の門を叩いた。", e.X, e.Y, [.. People.Where(u => InArmy(u) && u.Active && Dist(u, e) <= NewsRange), Person(HeadOf(Rebel))]); }
             else if (s.TalksUntil == -1 && !e.Moving) { var (wx, wy) = RingWay(g.X, g.Y, e); Walk(e, ProtoMove.Nearest(Map, wx, wy), "城門", "使者として城門へ向かっている"); }
         }
         foreach (var (id, tid) in War.Target.ToArray()) if (Person(id).House != Rebel && Sheltered(Person(tid))) War.Target.Remove(id);
@@ -432,7 +432,7 @@ public sealed partial class ProtoWorld
     // ---- 攻め手の兵糧：2日ごとに、鷹野城から小荷駄が3日分を運ぶ ----
     const string Konida = "konida";
     void AddKonida() => People.Add(new ProtoPerson { Id = Konida, Name = "小荷駄", House = "", Role = "小荷駄", Home = "takano-castle", Active = false, X = Map.Site("takano-castle").X * 100L, Y = Map.Site("takano-castle").Y * 100L, Doing = "" });
-    (long X, long Y) KonidaYard { get { var h = Map.Site("takano-castle"); return ProtoMove.Nearest(Map, h.X * 100L, h.Y * 100L + 70_00); } } // 鷹野城の門の外
+    (long X, long Y) KonidaYard { get { var h = Map.Site("takano-castle"); long hx = h.X * 100L, hy = h.Y * 100L; var c = CampAt("takano") ?? SiegeCamp; double dx = c.X - hx, dy = c.Y - hy, l = Math.Max(1, Math.Sqrt(dx * dx + dy * dy)); return ProtoMove.Nearest(Map, hx + (long)(dx / l * 160_00), hy + (long)(dy / l * 160_00)); } } // 鷹野城の外、本陣の側（城の中を通らない）
     void Convoy()
     {
         var s = War.Siege!; var kd = People.FirstOrDefault(p => p.Id == Konida); if (kd == null || s.CampAt == 0) return;

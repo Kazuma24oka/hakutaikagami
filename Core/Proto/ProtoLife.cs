@@ -180,6 +180,8 @@ public sealed partial class ProtoWorld
     void Rewards()
     {
         var lord = Person(HeadOf("takano")); var Lord = lord.Id; if (!Near(Player, lord)) return;
+        if (Flag("envoy-shirked") && Flag("awards-done") && !flags.ContainsKey("promote-after")) { flags["promote-after"] = DayIndex + 30; Note($"{lord.Name}「使者の務めを放り出したそうだな。この度の取り立ては見送る。」"); }
+        if (flags.TryGetValue("promote-after", out var pa) && DayIndex < pa) return;
         if (Rank == 0 && Merit >= 8) { Set("promoted:" + DayIndex); Rank = 1; Money += 500; Note($"{lord.Name}から、褒美に銭500文と馬を賜り、馬廻に取り立てられた。"); }
         else if (Rank == 1 && Merit >= 20 && !Flag("promoted:" + DayIndex)) { Rank = 2; Money += 1000; Note($"{lord.Name}から、褒美に銭1000文を賜り、組頭に取り立てられた。"); }
         if (favors.TryGetValue(Lord, out var f) && f <= -15 && !Flag("scolded:" + DayIndex)) { Set("scolded:" + DayIndex); Note($"{lord.Name}「務めを怠るでない。」"); }

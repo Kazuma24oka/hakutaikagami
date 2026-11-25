@@ -511,7 +511,7 @@ public partial class ProtoGame : Node3D
     void ShowGoal()
     {
         var p = World.Player; if (!p.Moving) { marker.Visible = false; return; }
-        var (x, y) = p.Path[^1]; marker.Position = ToScene(x, y) + new Vector3(0, 0.6f, 0); marker.Visible = true;
+        var (x, y) = p.Path[^1]; marker.Position = ToScene(x, y) + new Vector3(0, 0.6f, 0); marker.Visible = marker.Position.DistanceTo(ToScene(p.X, p.Y)) > 40 * Math.Max(1, distance / 450);
     }
 
     Vector3? PickGround(Vector2 screen)
