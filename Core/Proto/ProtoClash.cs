@@ -25,7 +25,8 @@ public sealed partial class ProtoWorld
 {
     public static readonly string[] Stances = ["白兵", "射撃", "防御"];
     // 戦法：一人一つ（Core/Proto/ProtoArms.cs の TacticOf）。ゲージがたまると使える（NPC はたまれば自分で使う）。
-    public int SpiritOf(string house) => War.Spirit.TryGetValue(house, out var s) ? s : 100;
+    // 籠城の間、岩切勢の全軍士気は城の士気（城兵が岩切勢のほぼすべて。数字を一つにする。2026-11-25 擬人格の印12）。
+    public int SpiritOf(string house) => house == Rebel && War.Siege != null && War.Result == "" && Garrison.Any() ? CastleMorale : War.Spirit.TryGetValue(house, out var s) ? s : 100;
     public ProtoClash? ClashOf(string id) => War.Clashes.FirstOrDefault(c => c.A == id || c.B == id);
     public int GaugeOf(string id) => War.Gauge.TryGetValue(id, out var g) ? g : 0;
     bool Buffed(string kind, string id) => War.Until.TryGetValue(kind + ":" + id, out var t) && Second < t;
@@ -123,6 +124,7 @@ public sealed partial class ProtoWorld
         }
         WearGate(); if (War.Result != "") return; // 耐久が尽きて落城
         Pursue(all, hits);
+        foreach (var ((a, _), v) in dealt) War.Dealt[a] = War.Dealt.GetValueOrDefault(a) + v; // 戦果（論功行賞）
         foreach (var (id, h) in hits)
         {
             var b = Person(id); int loss = Math.Max(1, (int)Math.Round(h));
@@ -130,7 +132,7 @@ public sealed partial class ProtoWorld
             War.Hits.Add(new ProtoHit { To = id, Loss = was - b.Soldiers, Kind = War.Routed.Contains(id) ? "追い討ち" : rear.Contains(id) ? "背後" : side.Contains(id) ? "側面" : "正面", Surprise = shaken.Contains(id), At = Second });
             // 士気：倒れた割合ぶん下がり、背後5・側面2がさらに下がる。混乱している間は下がりが1.5倍。
             double drop = Math.Ceiling(loss * 100.0 / Math.Max(1, was) * (b.Player && War.Stance == "防御" ? 0.5 : 1)) + (rear.Contains(id) ? 5 : side.Contains(id) ? 2 : 0);
-            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1) * (BehindGate(b) ? 0.5 : 1) * Math.Clamp(50.0 / Cmd(b), 0.6, 1.4))); // 城の内の兵は士気が半分しか下がらない // 統率が高いほど士気が減りにくい
+            b.Morale = Math.Max(0, b.Morale - (int)Math.Ceiling(drop * (Confused(id) ? 1.5 : 1) * (BehindGate(b) ? 0 : 1) * Math.Clamp(50.0 / Cmd(b), 0.6, 1.4))); // 城の内の兵は、打ち合いでは士気が下がらない（下がるのは兵糧切れと調略だけ。2026-11-25 ユーザー） // 統率が高いほど士気が減りにくい
             // 混乱：正面2・側面6・背後10、二隊以上に打たれていれば+4、下がりながら打たれていれば+4。
             var hitters = dealt.Keys.Where(k => k.Item2 == id).Select(k => Person(k.Item1)).OrderByDescending(h => h.Wits).ThenBy(h => h.Id).ToArray();
             if (hitters.Length > 0) AddChaos(b, (rear.Contains(id) ? 10 : side.Contains(id) ? 6 : 2) + (hitters.Length >= 2 ? 4 : 0) + (Retreating(b) ? 4 : 0), hitters[0]);

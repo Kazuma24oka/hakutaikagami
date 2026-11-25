@@ -384,7 +384,7 @@ public partial class ProtoGame : Node3D
         clock.Text = ProtoWorld.Clock(World.Second);
         foot.Text = ProtoMap.Name(World.Map.GroundAtCm(p.X, p.Y)) + (site != null ? "（" + World.SiteName(site) + "）" : "");
         status.Text = $"{World.RankName}　勲功{World.Merit}　銭{World.Money}文" + (p.Soldiers > 0 ? $"　兵{p.Soldiers}・士気{p.Morale}" : "") + (p.Soldiers > 0 && World.War.Phase is "行軍" or "合戦" && World.War.Result == "" && World.CampAt("takano") != null ? (World.Ordered(p) ? "" : "　指図届かず") + (World.Supplied(p) ? "" : World.CarriedLeft(p) is > 0 and var left ? $"　兵糧届かず（手持ち あと{(left + Hour0 - 1) / Hour0}刻）".Replace("刻", "時間") : "　兵糧切れ") : "")
-            + (World.War.Routed.Contains(p.Id) && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
+            + (World.War.Routed.Contains(p.Id) && p.Soldiers > 0 && World.War.Result == "" ? World.RegroupLeft switch { null => "　崩れ", < 0 => "　崩れ・本陣へ", var t => $"　立て直し あと{(t + 59) / 60}分" } : "") + (World.Second < p.HurtUntil ? "　手傷" : "");
         Buttons["pause"].Text = Paused ? "再生" : "停止";
         int si = Math.Max(0, Array.IndexOf(Speeds, Speed)); if ((int)speedSlider.Value != si) speedSlider.SetValueNoSignal(si); speedText.Text = Speed + "倍";
         int stocked = Debug.Stock().Length; Buttons["stock"].Text = "印一覧（" + stocked + "）"; Buttons["stock"].Disabled = stocked == 0;
@@ -394,7 +394,7 @@ public partial class ProtoGame : Node3D
         var orders = World.Orders().ToArray(); bool inWar = (World.War.Phase is "行軍" or "合戦" || World.Returning) && orders.Length > 0; // 決着のあとも、論功行賞が済むまで作戦の成否を見られる
         string tab = !inWar ? "依頼" : missionTab ?? "軍令";
         static bool IsWarAction(string id) => id.StartsWith("camp:") || id.StartsWith("siege:") || id.StartsWith("parley:") || id.StartsWith("attack:") || id.StartsWith("withdraw:") || id.StartsWith("order:") || id.StartsWith("council:");
-        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + World.CampPacking + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.Supply + sg.CampAt + sg.Ringed + sg.TalksUntil + sg.Plot : "");
+        var key = tab + inWar + "#" + string.Join("|", actions.Select(a => a.Id + a.Text)) + "#" + string.Join("|", open.Select(t => t.Id + t.Step)) + "#" + string.Join("|", near.Select(n => n.Id)) + "#" + string.Join("|", orders.Select(o => o.Unit + o.Role + o.Text)) + World.War.PlayerFollows + World.PlanState + string.Join("", World.PlanSteps().Select(x => x.State)) + World.War.Phase + string.Join("", World.RetreatRules().Select(x => x.Id + x.Met)) + World.Retreated("iwakiri") + World.CampLost("takano") + World.CampMoving + World.CampPacking + CampPick + (World.CampAt("takano") != null) + World.StockOf("takano") + (World.War.Siege is { } sg ? sg.Method + sg.Gate + sg.CampAt + sg.Ringed + World.OpenSectors + string.Join("", sg.Forts) + sg.TalksUntil + sg.Plot + World.RumorUsed + World.KnownRelief : "");
         if (key != panelKey)
         {
             panelKey = key; hoverUnit = null;
@@ -415,9 +415,16 @@ public partial class ProtoGame : Node3D
                 }
                 // 本陣を移す：委任／手動のすぐ下（見つけやすい所。2026-11-21 ユーザー）。
                 if (actions.Any(x => x.Id == "camp:pick")) { var mv = Add(panel, "act:camp:pick", "本陣移動", () => Act("camp:pick")); if (CampPick) mv.Modulate = new Color(1, 0.88f, 0.45f); }
+                // 攻城の役目（本陣移動のすぐ下。総大将からの軍令。申し付けられた時から有効）：役目の名と、行き先のボタン。
+                foreach (var t in open.Where(t => t.Kind == "duty"))
+                {
+                    panel.AddChild(new Label { Text = "役目　" + t.Title, Modulate = new Color(1, 0.88f, 0.45f) });
+                    panel.AddChild(new Label { Text = t.Current?.Text ?? "", AutowrapMode = TextServer.AutowrapMode.WordSmart });
+                    var id = t.Id; var b = Add(panel, "task:" + id, "", () => { if (World.GoToTask(id)) ShowGoal(); }); taskButtons[id] = b;
+                }
                 string state = World.PlanState;
                 panel.AddChild(new Label { Text = "大目標　" + World.GoalOf("takano"), Modulate = new Color(1, 0.9f, 0.6f) });
-                if (World.War.Siege == null && World.CampAt("takano") != null)
+                if (World.CampAt("takano") != null && (World.War.Siege == null || World.War.Result == ""))
                     panel.AddChild(new Label { Text = World.CampLost("takano") ? "本陣　奪われた" : World.CampMoving ? "本陣　移している" : World.CampPacking ? "本陣　撤収" : World.StockOf("takano") > 0 ? $"本陣の兵糧　あと{World.StockOf("takano")}日" : "本陣の兵糧　尽きた", Modulate = World.CampLost("takano") || World.StockOf("takano") <= 0 ? bad : Colors.White });
                 // 攻城：攻め方・城の耐久・攻め手の兵糧（城の兵糧は外からは見えない）。
                 if (World.War.Siege != null && World.War.Result != "")
@@ -428,11 +435,11 @@ public partial class ProtoGame : Node3D
                 else if (World.War.Siege is { } siege)
                 {
                     panel.AddChild(new Label { Text = "攻城　" + siege.Method, Modulate = new Color(1, 0.9f, 0.6f) });
-                    panel.AddChild(new Label { Text = $"城の耐久　{siege.Gate}" });
-                    panel.AddChild(new Label { Text = siege.Ringed ? "包囲　囲んでいる" : "包囲　解けている", Modulate = siege.Ringed ? good : bad });
+                    panel.AddChild(new Label { Text = $"門　{siege.Gate}" });
+                    panel.AddChild(new Label { Text = siege.CampAt == 0 ? "囲み　まだ" : World.OpenSectors == 0 ? "囲み　閉じている" : $"囲み　穴{World.OpenSectors}", Modulate = siege.CampAt > 0 && World.OpenSectors == 0 ? good : bad });
+                    if (World.KnownRelief != "") panel.AddChild(new Label { Text = "後詰　" + World.KnownRelief, Modulate = World.KnownRelief == "退けた" ? good : bad });
                     if (World.Talking) panel.AddChild(new Label { Text = $"勧告　交渉中（{siege.Terms}）", Modulate = new Color(1, 0.88f, 0.45f) });
                     if (siege.Plot is "密書" or "約束") panel.AddChild(new Label { Text = siege.Plot == "密書" ? "調略　返書待ち" : "調略　内応の約束あり", Modulate = new Color(1, 0.88f, 0.45f) });
-                    panel.AddChild(new Label { Text = siege.Supply > 0 ? $"兵糧　あと{siege.Supply}日" : "兵糧　尽きた", Modulate = siege.Supply > 0 ? Colors.White : bad });
                     panel.AddChild(new HSeparator());
                 }
                 panel.AddChild(new Label { Text = World.War.Plan + (state != "" ? "　" + state : ""), Modulate = state == "失敗" ? bad : state == "成功" ? good : new Color(1, 0.9f, 0.6f) });

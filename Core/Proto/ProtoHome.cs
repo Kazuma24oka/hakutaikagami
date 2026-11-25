@@ -8,7 +8,7 @@ namespace HakutaiKagami.Core.Proto;
 // ・出陣した者はみな名を呼ばれる：負けても、隊が崩れても、兵を失っても外さない。
 //   勲功は、役目の見込み（RoleMerit）・役目を果たしたか・勝ち負けで決まる。
 // ・済むと、本人は預かった兵を返す。
-public sealed record ProtoAward(string Unit, string Name, string Role, bool Did, int Start, int Now, bool Broken, int Merit);
+public sealed record ProtoAward(string Unit, string Name, string Role, bool Did, int Start, int Now, bool Broken, int Merit, int Deeds);
 
 public sealed partial class ProtoWorld
 {
@@ -24,6 +24,7 @@ public sealed partial class ProtoWorld
     // 毎分：集まる → 総勢で戻る → 論功行賞。
     void Homecoming()
     {
+        if (War.Result != "") { EndRelief(); UpdatePlan(); } // どんな決着でも、後詰は沢渡へ引き上げる。作戦の最後の段（敵を崩す）も決着で決まる
         if (!Returning) return;
         var heir = Person(Heir); var host = AwardsHost; var castle = Map.Site(AwardsSite); long cx = castle.X * 100L, cy = castle.Y * 100L;
         var army = People.Where(u => InArmy(u) && u.Active).ToArray();
@@ -99,7 +100,7 @@ public sealed partial class ProtoWorld
     } + "」";
     // 出陣した者みな（大将・家老・本人の順）。
     public IEnumerable<ProtoAward> Awards() => People.Where(InArmy).OrderBy(u => u.Id == Heir ? 0 : u.Player ? 2 : 1).ThenBy(u => u.Id)
-        .Select(u => new ProtoAward(u.Id, u.Name, War.Roles.GetValueOrDefault(u.Id, ""), DidRole(u.Id), War.StartSoldiers.GetValueOrDefault(u.Id, u.Soldiers), u.Soldiers, War.Routed.Contains(u.Id), WarMerit(u.Id)));
+        .Select(u => new ProtoAward(u.Id, u.Name, War.Roles.GetValueOrDefault(u.Id, ""), DidRole(u.Id), War.StartSoldiers.GetValueOrDefault(u.Id, u.Soldiers), u.Soldiers, War.Routed.Contains(u.Id), WarMerit(u.Id), Deeds(u.Id)));
 
     // 役目を果たしたか。
     bool DidRole(string id)
@@ -112,12 +113,16 @@ public sealed partial class ProtoWorld
             _ => fought,
         };
     }
-    // 勲功：役目を果たせば見込みどおり、果たせなければ半分。勝ちで上乗せ、負けは戦っていれば見込みの四半分。
+    // 戦果：与えた打撃を、預かった兵の数で割ったもの（0〜6）。同じ兵で同じ役目でも、働きが違えば勲功が変わる（2026-11-25 ユーザー）。
+    public int Deeds(string id) => (int)Math.Min(6, Math.Round(War.Dealt.GetValueOrDefault(id) * 10 / Math.Max(1, War.StartSoldiers.GetValueOrDefault(id, 0))));
+    // 勲功：役目を果たせば見込みどおり、果たせなければ半分。戦果を足す。勝ちで上乗せ、負けは戦っていれば見込みの四半分。
+    // 本人は、攻城の毎日の役目（1つにつき2）と一番乗り（6）も足す。兵を失ったこと自体では減らさない。
     public int WarMerit(string id)
     {
-        int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = DidRole(id) ? see : see / 2;
+        int see = RoleMerit(War.Roles.GetValueOrDefault(id, "")), m = (DidRole(id) ? see : see / 2) + Deeds(id);
         if (id == Player.Id && Flag("parley-won")) m += 8; // 説いて城を開かせた
-        return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 : 0 });
+        if (id == Player.Id) m += DutiesDone * 2 + (Flag("ichiban") ? 6 : 0);
+        return Math.Max(0, War.Result switch { "鎮めた" or "開城させた" => m + 4, "退かせた" or "守り抜いた" => m + 2, _ => Flag("fought:" + id) ? see / 4 + Deeds(id) : 0 });
     }
 
     // 論功行賞を受ける。absent：本人がいないまま済ませる。

@@ -5,7 +5,7 @@ using System.Linq;
 using HakutaiKagami.Core.Proto;
 
 // 試作版の合戦の見え方（2026-11-19 組み合わせ案。Core/Proto/ProtoClash.cs）。
-// ・上：両方の総士気。
+// ・上：両方の兵の合計と押し合いの棒（士気の数字は上の帯の全軍士気だけにする。2026-11-25 擬人格の印12）。
 // ・地図：ぶつかっている隊どうしの間に押し合いのゲージ（左が鷹野、右が岩切。押している側が伸びる）。要所の旗は持っている家の色。
 // ・右下：本人の隊がぶつかっている間だけ、ぶつかり合いに加わっている隊の一覧。本人の行の戦法の名前を押すと戦法を使う
 //   （「自動」を入れていれば、ゲージがたまりしだい使う）。気力・構え・強攻は画面から外した（2026-11-20 ユーザーの印）。
@@ -61,7 +61,7 @@ public partial class ProtoGame
         pushPic = new TextureRect { Texture = pushTexture, ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.Scale, CustomMinimumSize = new Vector2(220, 16), SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, SizeFlagsVertical = Control.SizeFlags.ShrinkCenter, TextureFilter = CanvasItem.TextureFilterEnum.Nearest };
         // 並び：兵の合計｜士気合計 数字 [棒] 数字｜兵の合計
         troopsTakano = new Label(); troopsRebel = new Label();
-        top.AddChild(troopsTakano); top.AddChild(new VSeparator()); top.AddChild(new Label { Text = "総士気", Modulate = new Color(1, 0.9f, 0.6f) }); top.AddChild(sideTakano); top.AddChild(pushPic); top.AddChild(sideRebel); top.AddChild(new VSeparator()); top.AddChild(troopsRebel);
+        top.AddChild(troopsTakano); top.AddChild(new VSeparator()); top.AddChild(pushPic); top.AddChild(new VSeparator()); top.AddChild(troopsRebel);
         var lists = new HBoxContainer(); lists.AddThemeConstantOverride("separation", 14); col.AddChild(lists);
         allyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; enemyList = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
         allyScroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, SizeFlagsHorizontal = Control.SizeFlags.ExpandFill }; allyScroll.AddChild(allyList);

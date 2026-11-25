@@ -36,7 +36,7 @@ public sealed partial class ProtoWorld
     // 軍議で決めた、本陣を置く所（置く前でも分かる。画面用）。
     public (long X, long Y)? CampPlan => War.Camp.TryGetValue("takano", out var at) ? (at[0], at[1]) : null;
     public bool CampLost(string side) => Flag("camp-lost:" + side);
-    public int StockOf(string side) => side == Rebel ? War.Siege?.Food ?? 3 : War.Siege?.Supply ?? War.Stock.GetValueOrDefault("takano", 3);
+    public int StockOf(string side) => side == Rebel ? (War.Siege != null ? CastleFoodDays : 3) : War.Stock.GetValueOrDefault("takano", 3);
 
     // 指示が届くか：本陣から CampRange。本陣を取られたあとは、総大将の隊から。本陣を置く前は、いつでも届く。
     public bool Ordered(ProtoPerson u)
@@ -151,7 +151,7 @@ public sealed partial class ProtoWorld
         }
         UpdatePacking();
         // 兵を失って戦えない本人は、委任なら本陣で控える。
-        { var me = Player; if (InArmy(me) && Auto(me) && War.Result == "" && (me.Soldiers == 0 || War.Routed.Contains(me.Id) && (me.Soldiers < 10 || War.Recovered.Contains(me.Id))))
+        { var me = Player; if (InArmy(me) && Auto(me) && War.Result == "" && !OnDuty && (me.Soldiers == 0 || War.Routed.Contains(me.Id) && (me.Soldiers < 10 || War.Recovered.Contains(me.Id))))
           { var c = CampOf(me); /* 本陣を移している間は、移し終えるまで元の本陣で控える（先に一人で着かない） */ var spot = ProtoMove.Nearest(Map, c.X - 30_00, c.Y + 45_00); /* 本陣の入口の脇（真ん中は本陣の札と重なる） */ if (!me.Moving && Dist(me, spot.X, spot.Y) > 20_00) Walk(me, spot, c.Name, $"{c.Name}へ下がっている"); else if (!me.Moving) me.Doing = $"{c.Name}で控えている"; } }
 
         // 兵糧の届かない隊は、じわじわ士気と兵が減る（10分ごと）。城内の隊は、城の兵糧の決まり（Core/Proto/ProtoSiege.cs）。
@@ -172,7 +172,7 @@ public sealed partial class ProtoWorld
             bool guarded = People.Any(u => InArmy(u) && u.Active && u.Soldiers > 0 && !War.Routed.Contains(u.Id) && Dist(u, camp.X, camp.Y) <= 150_00);
             if (taker != null && !guarded)
             {
-                Set("camp-lost:takano"); War.CampMoveTo = null; War.Stock["takano"] = 0; if (War.Siege != null) War.Siege.Supply = 0;
+                Set("camp-lost:takano"); War.CampMoveTo = null; War.Stock["takano"] = 0;
                 foreach (var u in People.Where(u => InArmy(u) && War.Routed.Contains(u.Id) && Dist(u, camp.X, camp.Y) <= 150_00)) { u.Soldiers /= 2; War.AtCamp.Remove(u.Id); }
                 Happen("camp-lost:takano", $"{taker.Name}の兵が鷹野勢の本陣を奪った。兵糧は失われた。", camp.X, camp.Y, [.. People.Where(u => InArmy(u) && u.Active), taker]);
                 AddSpirit("takano", -30); AddSpirit(Rebel, 10); flags.Remove("raid:" + taker.Id);

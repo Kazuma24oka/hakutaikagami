@@ -57,7 +57,7 @@ public sealed partial class ProtoWorld
             "lord" => War.Routed.Contains(head.Id),
             "spirit-half" => SpiritOf(side) < 50,
             "noon" => Second >= War.SignalAt / Day * Day + 12 * Hour,
-            "supply" => War.Siege is { Supply: <= 0 } && SpiritOf(side) < 30,
+            "supply" => War.Siege != null && StockOf("takano") <= 0 && SpiritOf(side) < 30,
             _ => Flag("plan-failed"),
         };
     }

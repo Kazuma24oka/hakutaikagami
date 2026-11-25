@@ -76,7 +76,7 @@ public sealed partial class ProtoWorld
             People.Add(new ProtoPerson { Id = d.Id, Name = d.Name, House = d.House, Role = d.Role, Home = d.Home, Visits = d.Visits ?? [], Player = d.Player, X = spot.X, Y = spot.Y, Doing = "詰めている",
                 Command = d.Command, Valor = d.Valor, Wits = d.Wits, Loyalty = d.Loyalty, Temper = d.Temper, Soldiers = d.Soldiers, Skills = d.Skills ?? [], Troop = d.Troop, Tactic = d.Tactic });
         }
-        AddBandits();
+        AddBandits(); AddKonida();
         if (opening) Opening();
     }
 
@@ -209,9 +209,9 @@ public sealed partial class ProtoWorld
         if (minute) { Life(); foreach (var p in People) if (!p.Player && p.Active) Decide(p); }
         foreach (var p in People)
         {
-            if (!p.Moving || !p.Active || Confused(p.Id)) continue; // 混乱している隊は動けない
+            if (!p.Moving || !p.Active || Confused(p.Id) || KonidaWaits(p)) continue; // 混乱している隊は動けない。小荷駄は護衛を待つ
             long x = p.X, y = p.Y; int i = p.PathIndex;
-            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (InBody(p) || InReturn(p) ? MarchPercent : p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100 * TroopSpeed(p) / 100);
+            bool arrived = ProtoMove.Step(Map, ref x, ref y, p.Path, ref i, (InBody(p) || InReturn(p) ? MarchPercent : p.Player ? PlayerPercent : 100) * (Retreating(p) ? 75 : 100) / 100 * TroopSpeed(p) / 100 * (p.Id == Konida ? 70 : 100) / 100); // 小荷駄は荷を引くので遅い
             p.X = x; p.Y = y; p.PathIndex = i;
             if (arrived) Arrive(p);
         }
@@ -239,6 +239,7 @@ public sealed partial class ProtoWorld
     {
         if (p.Moving) return;
         if (p.House == "bandit") { Bandit(p); return; }
+        if (p.Id == Konida || p.Id == Nobunao && Flag("relief-house")) return; // 小荷駄と後詰は、攻城の決まりで動く（Core/Proto/ProtoSiege.cs）
         // 陣を守る（日課で城へ戻らない）。崩れた隊も、本陣で立て直せるうちは日課に戻らない。
         if (War.Phase is "行軍" or "合戦" && War.Assign.ContainsKey(p.Id) && (!War.Routed.Contains(p.Id) || !War.Recovered.Contains(p.Id) && p.Soldiers >= 10)) return;
         if (Returning && InArmy(p)) return; // 決着のあと、論功行賞が済むまでは軍の一員（本陣を畳んでいる間に日課へ戻って、ほかの所へ行かない）

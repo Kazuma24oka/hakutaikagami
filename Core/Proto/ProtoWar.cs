@@ -68,6 +68,7 @@ public sealed class ProtoWarState
     public long StageY { get; set; }
     public bool PlayerFollows { get; set; }  // 本人が「指図どおりに動く」を選んでいる
     public Dictionary<string, int> StartSoldiers { get; set; } = [];
+    public Dictionary<string, double> Dealt { get; set; } = []; // 隊ごとの与えた打撃の合計（戦果）
     // 大目標と撤退条件（Core/Proto/ProtoGoals.cs）。鍵は側（takano・iwakiri）。
     public Dictionary<string, string> Goals { get; set; } = [];
     public Dictionary<string, List<string>> RetreatRules { get; set; } = [];

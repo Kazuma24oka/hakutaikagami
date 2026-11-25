@@ -8,7 +8,7 @@ using HakutaiKagami.Core.Proto;
 // 城そのものは、もとの模型（本城・支城・館）を4倍にしたもの（Game/Scripts/Proto/ProtoGame.cs の拠点の模型。2026-11-21 ユーザー）。ここでは足すものだけを描く。
 // ・城門（城の南）のまわりに、明るい枠がゆっくり点滅する（攻城の間。門の色は変えない）。
 // ・城内の武将と兵は、合戦の姿のちびコマで、城の中（柵の内の広場）にいる。城が打ち合っている間は打つ動きをするだけで、門の前には立たない（2026-11-21 ユーザー）。
-// ・城の名前の下に、耐久・城の兵・士気と、耐久の棒を出す（本人が城の近くにいるとき）。
+// ・城の名前の下に、門と城の兵、門の棒を出す（本人の目か、城と戦う味方の知らせで分かるとき）。士気は上の帯。
 public partial class ProtoGame
 {
     const string CastleSite = "iwakiri-castle";
@@ -39,21 +39,52 @@ public partial class ProtoGame
             gateGlow.Position = gate + new Vector3(0, 16, -8); gateGlow.Scale = new Vector3(46, 34, 30) * (1 + 0.05f * pulse);
         }
         DrawWallGuards(c, gate);
+        DrawRing(c, live && siege!.CampAt > 0);
         // 城の欄：攻城の間、本人が城の近く（1km）にいるときだけ。
         bool show = live && World.KnowsCastle();
         castleLabel!.Visible = castleBar!.Visible = show; if (!show) return;
         int men = World.Garrison.Sum(u => u.Soldiers);
-        string key = $"{siege!.Gate}|{men}|{World.CastleMorale}";
+        string key = $"{siege!.Gate}|{men}";
         if (key != castleKey)
         {
             castleKey = key;
-            castleLabel.Text = $"耐久{siege.Gate}　兵{men}　士気{World.CastleMorale}";
+            castleLabel.Text = $"門{siege.Gate}　兵{men}"; // 士気は上の帯（岩切勢＝城の士気）
             var img = Image.CreateEmpty(100, 8, false, Image.Format.Rgba8); img.Fill(new Color(0.08f, 0.08f, 0.08f, 0.9f));
             img.FillRect(new Rect2I(1, 1, Math.Max(1, 98 * Math.Clamp(siege.Gate, 0, 100) / 100), 6), new Color(0.85f, 0.85f, 0.9f));
             castleBar.Texture = ImageTexture.CreateFromImage(img);
         }
         var top = c + new Vector3(0, 34 * CastleScale + 30 + distance * 0.05f, 0);
         castleLabel.Position = top; castleBar.Position = top - (Camera?.GlobalBasis.Y ?? Vector3.Up) * (distance * 0.03f);
+    }
+
+    // 囲み（Core/Proto/ProtoSiege.cs）：城から450mの薄い輪と、築いた付城（柵と小屋と旗）。隊は実際の隊がそのまま持ち場に立つ。
+    MeshInstance3D? siegeRing; readonly Node3D?[] forts = new Node3D?[6];
+    void DrawRing(Vector3 c, bool on)
+    {
+        if (siegeRing == null)
+        {
+            var mat = new StandardMaterial3D { ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded, Transparency = BaseMaterial3D.TransparencyEnum.Alpha, AlbedoColor = new Color(HouseColor("takano"), 0.35f), NoDepthTest = true, RenderPriority = 12 };
+            siegeRing = new MeshInstance3D { Mesh = new TorusMesh { InnerRadius = 0.99f, OuterRadius = 1f, Rings = 128, RingSegments = 4 }, MaterialOverride = mat, Visible = false }; AddChild(siegeRing);
+        }
+        siegeRing.Visible = on;
+        if (on) { float r = ProtoWorld.SiegeRingRadius / 100f; siegeRing.Position = c + new Vector3(0, 2, 0); siegeRing.Scale = new Vector3(r, Math.Max(1, distance / 60f), r); }
+        for (int i = 0; i < forts.Length; i++)
+        {
+            bool built = on && World.SectorFort(i);
+            if (built && forts[i] == null) forts[i] = BuildFort(i);
+            if (forts[i] != null) forts[i]!.Visible = built;
+        }
+    }
+    Node3D BuildFort(int i)
+    {
+        var n = new Node3D(); AddChild(n); var p = World.SectorPost(i); var at = ToScene(p.X, p.Y); at.Y = HeightAt(at.X, at.Z); n.Position = at;
+        var wood = new StandardMaterial3D { AlbedoColor = new Color(0.45f, 0.32f, 0.2f) }; var roof = new StandardMaterial3D { AlbedoColor = new Color(0.55f, 0.5f, 0.42f) }; var flag = new StandardMaterial3D { AlbedoColor = HouseColor("takano") };
+        for (int k = 0; k < 16; k++) { float a = k * Mathf.Tau / 16; n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(2, 9, 2) }, MaterialOverride = wood, Position = new Vector3(Mathf.Cos(a) * 22, 4.5f, Mathf.Sin(a) * 22) }); }
+        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(16, 7, 11) }, MaterialOverride = wood, Position = new Vector3(0, 3.5f, 0) });
+        n.AddChild(new MeshInstance3D { Mesh = new PrismMesh { Size = new Vector3(18, 5, 13) }, MaterialOverride = roof, Position = new Vector3(0, 9.5f, 0) });
+        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.8f, 20, 0.8f) }, MaterialOverride = wood, Position = new Vector3(12, 10, 0) });
+        n.AddChild(new MeshInstance3D { Mesh = new BoxMesh { Size = new Vector3(0.4f, 6, 5) }, MaterialOverride = flag, Position = new Vector3(12, 16, 2.6f) });
+        return n;
     }
 
     // 城内の武将と兵を、城の中の広場に置く（合戦の姿のちびコマ。南を向く）。

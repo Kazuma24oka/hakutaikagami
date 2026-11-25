@@ -191,7 +191,7 @@ public sealed partial class ProtoWorld
         var bandits = People.Where(p => p.House == "bandit").ToArray();
         if (day >= 1 && !Flag("bandits-came")) { Set("bandits-came"); foreach (var b in bandits) b.Active = true; }
         foreach (var b in bandits.Where(b => b.Active))
-            foreach (var v in People.Where(v => v.Active && !v.Player && !v.Samurai && v.House != "bandit" && SiteOf(v) == null && Dist(v, b) <= 60_00))
+            foreach (var v in People.Where(v => v.Active && !v.Player && !v.Samurai && v.House != "bandit" && SiteOf(v) == null && Dist(v, b) <= (v.Id == Konida ? 90_00 : 60_00) && !Escorted(v) && (v.Id != Konida || War.Siege is { ConvoyLeg: "行き" }))) // 侍が付いている荷は襲わない
             {
                 if (Flag($"robbed:{v.Id}:{day}")) continue; Set($"robbed:{v.Id}:{day}");
                 Happen($"robbery:{v.Id}:{day}", $"{v.Name}が{(Dist(v, Pass.X, Pass.Y) <= 400_00 ? "峠道" : "道")}で賊に荷を奪われた。", v.X, v.Y, [v, .. bandits]);
@@ -459,7 +459,7 @@ public sealed partial class ProtoWorld
     }
     public string TaskPlace(ProtoTask t)
     {
-        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道";
+        var s = t.Current ?? t.Steps[^1]; if (s.Site != null) return SiteName(s.Site); if (s.Do == "fight") return "峠道"; if (s.Do is "build" or "watch") return "岩切城の囲み"; if (s.Do == "envoy") return "岩切城の城門"; if (s.Do == "escort") return "小荷駄";
         var pos = Map.Data.Positions?.FirstOrDefault(p => p.X * 100L == s.X && p.Y * 100L == s.Y); return pos?.Name ?? "峠";
     }
     public long? TaskEta(ProtoTask t)

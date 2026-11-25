@@ -28,6 +28,7 @@ public partial class ProtoGame
         foreach (var m in new[] { "包囲", "力攻め" }) Pick(top, m, m, "siege:" + m, m == now);
         string stage = World.PlotStage;
         Pick(top, "調略", stage == "約束" ? "内応合図" : "調略", "siege:調略", stage == "約束", stage is "密書" or "断られた" or "済");
+        Pick(top, "流言", "流言", "siege:流言", false, World.RumorUsed);
         var campRow = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; // 本陣移動は攻め方と別の行
         if (World.CanMoveCamp) { var mv = new Button { Text = "本陣移動", FocusMode = Control.FocusModeEnum.None, CustomMinimumSize = new Vector2(150, 0) }; mv.Pressed += () => { Scene.Close(); CampPick = true; }; campRow.AddChild(mv); SiegeButtons["本陣移動"] = mv; }
         var low = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center }; low.AddThemeConstantOverride("separation", 16); box.AddChild(low);
@@ -55,14 +56,14 @@ public partial class ProtoGame
         string result = World.War.Result switch { "鎮めた" when World.War.Siege != null => "岩切城を落とした", "開城させた" => "岩切城を開かせた", "鎮めた" => "岩切勝元の謀叛を鎮めた", "退かせた" => "岩切勢を退かせた", "守り抜いた" => "陣を守り抜いた", "退いた" => "兵を引いた", var r => r };
         col.AddChild(new Label { Text = result, HorizontalAlignment = HorizontalAlignment.Center });
         col.AddChild(new HSeparator());
-        var grid = new GridContainer { Columns = 5 }; grid.AddThemeConstantOverride("h_separation", 40); grid.AddThemeConstantOverride("v_separation", 10); col.AddChild(grid);
-        foreach (var h in new[] { "", "役目", "兵", "働き", "勲功" }) grid.AddChild(new Label { Text = h, Modulate = dim });
+        var grid = new GridContainer { Columns = 6 }; grid.AddThemeConstantOverride("h_separation", 40); grid.AddThemeConstantOverride("v_separation", 10); col.AddChild(grid);
+        foreach (var h in new[] { "", "役目", "兵", "働き", "戦果", "勲功" }) grid.AddChild(new Label { Text = h, Modulate = dim });
         string head = World.HeadOf("takano");
         foreach (var a in World.Awards())
         {
             var c = a.Unit == World.Player.Id ? new Color(1, 0.88f, 0.45f) : Colors.White;
             string deed = a.Did ? "役目を果たした" : a.Broken ? "隊が崩れた" : "—";
-            foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
+            foreach (var (text, right) in new[] { (a.Name, false), (a.Role, false), ($"{a.Now}／{a.Start}", true), (deed, false), (a.Deeds.ToString(), true), (a.Unit == head ? "—" : a.Merit.ToString(), true) })
                 grid.AddChild(new Label { Text = text, Modulate = c, HorizontalAlignment = right ? HorizontalAlignment.Right : HorizontalAlignment.Left });
         }
         col.AddChild(new HSeparator());
