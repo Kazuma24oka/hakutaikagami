@@ -110,7 +110,7 @@ public sealed partial class ProtoWorld
     public bool CampMoving => War.CampMoveTo != null;
     public (long X, long Y)? CampMoveTarget => War.CampMoveTo is { } t ? (t[0], t[1]) : null;
     public long CampMoveLeft => Math.Max(0, War.CampMoveUntil - Second);
-    public bool CanMoveCamp => War.Phase is "行軍" or "合戦" && War.Result == "" && InArmy(Player) && !CampLost("takano") && !CampMoving && !Talking
+    public bool CanMoveCamp => War.Phase is "行軍" or "合戦" && War.Result == "" && !Retreated("takano") && InArmy(Player) && !CampLost("takano") && !CampMoving && !Talking
         && (answering || CampAt("takano") is { } c && Dist(Player, c.X, c.Y) <= 300_00);
     string MoveCamp(long x, long y)
     {

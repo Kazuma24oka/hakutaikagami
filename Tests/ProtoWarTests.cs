@@ -72,7 +72,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L); w.Advance(Math.Max(0, w.War.CouncilAt - w.Second) + 60);
         cp.Expect(w.CouncilOpen, "刻限に鷹野城にいれば軍議に加われる");
         foreach (var line in w.Council().Opinions) cp.Log(line);
-        cp.Log(w.DecideCouncil("south-hill", ProtoWorld.Departures[0], ProtoWorld.Signals[0]));
+        cp.Log(w.DecideCouncil("south-hill", ProtoWorld.Departures[0], ProtoWorld.Signals[0])); w.Do("order:free"); // この検査は本人を手で動かす
         cp.Expect(w.PostOf(w.Player.Id).Name == "丘の陣" && w.War.PlayerAtCouncil, "本人の選んだ陣が通る（陣の名前は地形から付く）");
         var katsumoto = w.Person("iwakiri-katsumoto");
         cp.Expect(!w.Visible.Contains(katsumoto), "遠くの敵の隊は見えない");
@@ -90,7 +90,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         cp.Expect(w.ScoutChance(kosaka) > w.ScoutChance(iguchi) * 3, "知略が高いほど見つけやすい");
         // 井口を森の中に、小坂を300m離れた森の外に置く（小坂は物見上手なので350mまで探れる）。本人は遠くへ。
         (iguchi.X, iguchi.Y) = (kosaka.X, kosaka.Y); kosaka.X = iguchi.X + 300_00; kosaka.Y = iguchi.Y - 150_00;
-        me.X = 2600_00; me.Y = 1900_00; me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
+        w.Do("order:free"); me.X = 2600_00; me.Y = 1900_00; me.Path = []; me.PathIndex = 0; w.War.Target.Remove(me.Id);
         cp.Expect(w.TerrainName(iguchi.X, iguchi.Y) == "森" && w.TerrainName(kosaka.X, kosaka.Y) != "森" && !w.Visible.Contains(iguchi), "森の中の井口は、離れた所からは見えない");
         for (int i = 0; i < 60 && !w.Facts.Any(f => f.Id.StartsWith("spotted:" + iguchi.Id)); i++) { foreach (var u in new[] { kosaka, iguchi }) { u.Path = []; u.PathIndex = 0; w.War.Target.Remove(u.Id); } w.Advance(60); }
         var found = w.Facts.FirstOrDefault(f => f.Id.StartsWith("spotted:" + iguchi.Id));
@@ -185,7 +185,7 @@ public sealed class ProtoWarTests(ITestOutputHelper o)
         while (w.War.Phase != "軍議待ち" && w.Second < 4 * Day) w.Advance(600);
         var castle = Map.Site("takano-castle"); w.MoveTo(castle.X * 100L, castle.Y * 100L);
         for (int i = 0; i < 120 && !w.CouncilOpen; i++) w.Advance(60);
-        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]);
+        w.DecideCouncil("road-mouth", ProtoWorld.Departures[0], ProtoWorld.Signals[1]); w.Do("order:free"); // この検査は本人を手で動かす
         w.Do("tactic-auto:off"); // この検査は、本人が自分で戦法を使う場合（合戦の窓の「自動」を外した形）
         { var foe = Map.Site("iwakiri-castle"); w.War.Camp["takano"] = [foe.X * 100L, foe.Y * 100L + 500_00]; } // 本陣を城の近くに置いたことにする（兵糧が届く所で戦う）
         var katsumoto = w.Person("iwakiri-katsumoto"); w.MoveTo(katsumoto.X, katsumoto.Y);

@@ -485,7 +485,7 @@ public partial class ProtoGame : Node3D
                 if (near.Length > 0)
                 {
                     panel.AddChild(new HSeparator());
-                    foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "会話：" + n.Name, () => Say(World.Do("talk:" + nid), nid)); }
+                    foreach (var n in near) { var nid = n.Id; Add(panel, "talk:" + nid, "会話：" + n.Name, () => { Say(World.Do("talk:" + nid), nid); ShowGoal(); }); }
                 }
             }
         }

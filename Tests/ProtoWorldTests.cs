@@ -9,6 +9,34 @@ public sealed class ProtoWorldTests
     static (long, long) At(int xm, int ym) => (xm * 100L, ym * 100L);
     const long Day = ProtoWorld.Day, Hour = ProtoWorld.Hour;
 
+    // 2026-11-26 ユーザー：最初の使いで、相手と「会話」しても書状を渡せず先に進めなかった。着いたあとに行き先を押し直すと「着いた」が何度も出た。
+    [Fact]
+    public void TalkingToTheAddresseeHandsOverTheLetter()
+    {
+        var w = new ProtoWorld(Map); var t = w.OpenTasks.First();
+        w.GoToTask(t.Id); w.Advance(w.TaskEta(t)!.Value + 60);
+        int arrived = w.Journal.Count(e => e.Text.EndsWith("に着いた。"));
+        w.GoToTask(t.Id); w.Advance(60); w.GoToTask(t.Id); w.Advance(60);
+        Assert.Equal(arrived, w.Journal.Count(e => e.Text.EndsWith("に着いた。")));
+        w.Do("talk:" + t.Steps[0].Person);
+        Assert.Contains(w.Journal, e => e.Text.Contains("に書状を渡した"));
+        Assert.NotEqual(0, t.Step);
+    }
+
+    // 2026-11-26：軍議で承認しただけ（委任を押さない）でも、本人は総勢と一緒に出陣して刻限に間に合う。
+    [Fact]
+    public void AfterTheCouncilThePlayerMarchesWithTheArmy()
+    {
+        var w = new ProtoWorld(Map);
+        for (int i = 0; i < 6 * 24 * 60 && w.War.Phase != "軍議待ち"; i++) w.Advance(60);
+        Assert.Equal("軍議待ち", w.War.Phase);
+        var prop = w.Proposal(); w.DecideCouncil(null, ProtoWorld.Departures[0], ProtoWorld.Signals[0], prop.Plan, prop.Pieces.First(x => x.Unit == w.Player.Id).Role);
+        Assert.True(w.War.PlayerFollows);
+        for (int i = 0; i < 2 * 24 * 60 && !w.Journal.Any(e => e.Text.Contains("役目ごとに分かれた")); i++) w.Advance(60);
+        w.Advance(2 * 3600);
+        Assert.DoesNotContain(w.Journal, e => e.Text.Contains("出陣") && e.Text.Contains("期限に間に合わなかった"));
+    }
+
     [Fact]
     public void BakesTheTerrainFromData()
     {

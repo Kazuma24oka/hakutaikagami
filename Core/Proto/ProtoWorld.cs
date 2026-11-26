@@ -196,6 +196,7 @@ public sealed partial class ProtoWorld
     public bool MoveTo(long x, long y, string? goal = null)
     {
         var p = Player; if (p.House == "takano") (x, y) = OutsideWalls(x, y, p.X, p.Y); // 層を破るまで、敵の城の内へは入れない
+        if (goal != null && SiteOf(p) != null && Dist(p, x, y) <= 30_00) return true; // もう着いている所へは歩き直さない（「着いた」を繰り返さない）
         var path = ProtoMove.Plan(Map, (p.X, p.Y), (x, y)); if (path == null) return false;
         p.Path = path; p.PathIndex = 0; p.Goal = goal; p.Doing = goal != null ? goal + "へ向かう" : "歩いている"; return true;
     }

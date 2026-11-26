@@ -144,6 +144,13 @@ public sealed partial class ProtoWorld
         string what = War.Siege != null ? "攻城の働き" : "合戦の働き";
         Note(absent ? $"論功行賞は済んでいた。{what}で勲功{m}。" : $"{what}で勲功{m}。");
         if (back > 0) Note($"預かった兵{back}を返した。");
+        // 2026-11-26：岩切城で論功行賞を受けたら、鷹野城へ戻るよう言われる（言われないと、空の城に一人残って何もできなかった）。
+        if (Map.Site("takano-castle") is var home && Dist(Player, home.X * 100L, home.Y * 100L) > 300_00)
+        {
+            var lord = Person(HeadOf("takano"));
+            var t = Offer(lord.Id, "鷹野城へ戻る", "return", Second, Second + 2 * Day, 0, new ProtoStep("meet", $"鷹野城で{lord.Name}に目通りする", home.Id, lord.Id));
+            t.State = TaskState.Open; t.Speech = "戦は済んだ。そなたは鷹野城へ戻れ。"; Note(absent || Dist(Player, lord) > 300_00 ? $"使番が来た。{lord.Name}から、鷹野城へ戻れとのこと。" : $"{lord.Name}「{t.Speech}」");
+        }
         return "";
     }
 }

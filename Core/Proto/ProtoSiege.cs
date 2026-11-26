@@ -243,7 +243,7 @@ public sealed partial class ProtoWorld
     public bool CastleFighting => War.Siege != null && War.Clashes.Any(c => Sheltered(Person(c.A)) || Sheltered(Person(c.B)));
     public (long X, long Y)? PlayerSiegePost => War.Siege != null && War.Result == "" && InArmy(Player) ? SiegePost(Player) : null;
     // 攻城の軍議：本陣（300m）で、いつでも開ける（本陣を取られたあとは、総大将のそば）。
-    public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && InArmy(Player)
+    public bool SiegeCouncilOpen => War.Siege != null && War.Result == "" && !Retreated("takano") && InArmy(Player)
         && (answering || (CampAt("takano") is { } hq && !CampLost("takano") ? Dist(Player, hq.X, hq.Y) <= 300_00 || CampMoveTarget is { } mv && Dist(Player, mv.X, mv.Y) <= 300_00 : Dist(Player, SiegeLead) <= 300_00));
     string DoSiege(string id) => id == "調略" ? Scheme() : id == "流言" ? Rumor() : id.StartsWith("勧告:") ? Recommend(id[3..]) : DecideSiege(id);
     string DecideSiege(string? want)

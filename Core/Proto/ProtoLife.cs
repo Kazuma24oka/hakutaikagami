@@ -102,7 +102,15 @@ public sealed partial class ProtoWorld
         foreach (var t in Tasks)
         {
             if (t.State == TaskState.Offered && Second >= t.OfferUntil) { t.State = TaskState.Expired; Stand(t); }
-            else if (t.State == TaskState.Open && Second > t.Deadline) Fail(t);
+            else if (t.State == TaskState.Open && Second > t.Deadline)
+            {
+                // 2026-11-26：戦の前に受けた務めは、戦の間に期限が来ても咎めない（戦で立ち消えになる）。
+                if (War.Phase != "" && t.Kind is not ("muster" or "duty" or "council" or "awards" or "return")) { t.State = TaskState.Expired; continue; }
+                // 出陣：城を出て戦場にいれば、陣を敵に押さえられて着けなくても遅れではない。
+                var home = Map.Site("takano-castle");
+                if (t.Kind == "muster" && Dist(Player, home.X * 100L, home.Y * 100L) > 500_00) { t.State = TaskState.Expired; continue; }
+                Fail(t);
+            }
         }
         Bandits(day, hour);
         Dispute(day);
@@ -131,7 +139,7 @@ public sealed partial class ProtoWorld
         var lord = Person(HeadOf("takano")); var Lord = lord.Id; if (!lord.Active || SiteOf(lord) != "takano-castle") return;
         long until = At(day, 11), deadline = At(day, 19);
         Offer(Lord, "西の村と峠の見回り", "patrol", until, deadline, 3,
-            new ProtoStep("visit", "西の村へ行く", "west-village"), new ProtoStep("visit", "峠へ行く", X: Pass.X, Y: Pass.Y), new ProtoStep("meet", "鷹野義正に報告する", "takano-castle", Lord));
+            new ProtoStep("visit", "西の村へ行く", "west-village"), new ProtoStep("visit", "峠へ行く", X: Pass.X, Y: Pass.Y), new ProtoStep("meet", $"{lord.Name}に報告する", "takano-castle", Lord));
         if (day % 2 == 1)
             Offer(Lord, "西の村の年貢を受け取る", "tax", until, deadline, 3,
                 new ProtoStep("take", "太兵衛から年貢を受け取る", "west-village", Tahei), new ProtoStep("give", "小坂重忠に年貢を渡す", "takano-castle", Karou));
@@ -140,10 +148,10 @@ public sealed partial class ProtoWorld
                 new ProtoStep("take", "小坂重忠から寄進の銭を受け取る", "takano-castle", Karou), new ProtoStep("give", "慈恩に寄進の銭を渡す", "temple", Jion));
         if (Flag("talk-set") && !Flag("talk-done") && Knows(lord, "talk-set"))
             Offer(Lord, "市場町の話し合いに立ち会う", "attend", At(day, 9, 30), At(day, 13), 4,
-                new ProtoStep("attend", "12時まで市場町の話し合いに居合わせる", "town"), new ProtoStep("meet", "鷹野義正に報告する", "takano-castle", Lord));
+                new ProtoStep("attend", "12時まで市場町の話し合いに居合わせる", "town"), new ProtoStep("meet", $"{lord.Name}に報告する", "takano-castle", Lord));
         if (Knows(lord, "bandits-reported") && People.Any(p => p.House == "bandit" && p.Active) && !Tasks.Any(t => t.Kind == "bandits" && t.State is TaskState.Offered or TaskState.Open))
             Offer(Lord, "峠道の賊を討つ", "bandits", At(day, 12), At(day + 1, 19), 8,
-                new ProtoStep("fight", "峠道の賊と戦う", Person: "bandit-1", X: Ambush.X, Y: Ambush.Y), new ProtoStep("meet", "鷹野義正に報告する", "takano-castle", Lord));
+                new ProtoStep("fight", "峠道の賊と戦う", Person: "bandit-1", X: Ambush.X, Y: Ambush.Y), new ProtoStep("meet", $"{lord.Name}に報告する", "takano-castle", Lord));
     }
 
     // 受けなかった務めは家中の者が代わりに行く（姿が見える）。
@@ -287,7 +295,7 @@ public sealed partial class ProtoWorld
                 Happen("dispute", "沢渡家が、国境の村の境目について話し合いを求めてきた。", to.X, to.Y, to, Person(l.Carrier));
                 var reply = Send(to, Nobufusa, "明日の10時、市場町にて話し合おう。", "dispute-reply");
                 var t = Offer(Lord, "沢渡城へ返書を届ける", "dispute-reply", Second + 3 * Hour, At(DayIndex, 20), 3,
-                    new ProtoStep("hand", "沢渡信房に返書を渡す", "sawatari-castle", Nobufusa, Letter: reply.Id), new ProtoStep("meet", "鷹野義正に報告する", "takano-castle", Lord));
+                    new ProtoStep("hand", "沢渡信房に返書を渡す", "sawatari-castle", Nobufusa, Letter: reply.Id), new ProtoStep("meet", $"{Person(Lord).Name}に報告する", "takano-castle", Lord));
                 _ = t; break;
             }
             case "dispute-reply":
@@ -348,7 +356,7 @@ public sealed partial class ProtoWorld
     public string Do(string action)
     {
         var (kind, id) = (action[..action.IndexOf(':')], action[(action.IndexOf(':') + 1)..]);
-        if (kind == "talk") return Talk(id);
+        if (kind == "talk") { var due = Actions().FirstOrDefault(a => a.Id.StartsWith("step:") && Tasks.FirstOrDefault(t => "step:" + t.Id == a.Id)?.Current?.Person == id); return due != null ? Do(due.Id) : Talk(id); } // 用のある相手と話せば、その用を済ませる（書状を渡すなど）
         if (kind == "persuade") return Persuade();
         if (kind == "attack") return Attack(id);
         if (kind == "withdraw") return Withdraw();

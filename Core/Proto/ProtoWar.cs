@@ -218,6 +218,7 @@ public sealed partial class ProtoWorld
         string dep = departure ?? Departures[1], sig = signal ?? Signals[0];
         War.Goals["takano"] = goal ?? Goals[0];
         AssignRoles(plan ?? PlansOf(War.Goals["takano"])[0], role, playerPosition, posts);
+        if (present && War.Assign.GetValueOrDefault(Player.Id) != "takano-castle") War.PlayerFollows = true; // 軍議に出た者は、初めは委任で総勢と一緒に出陣する（2026-11-26 手動のままだと、刻限になっても本人だけ動かず出陣に遅れた）
         // 本陣を置く所：総大将の案は、戦場への道の手前（着陣の地）。本人の再提案（posts の "camp"）は、総大将が聞き入れたときだけ。総勢はまずそこへ進む。
         { var at = CampDefault; if (posts != null && posts.TryGetValue("camp", out var want) && !refused && (HeadOf("takano") == Player.Id || CommanderListens)) at = ProtoMove.Nearest(Map, want[0], want[1]);
           War.Camp["takano"] = [at.X, at.Y]; War.Stock["takano"] = 3; (War.StageX, War.StageY) = at; }
